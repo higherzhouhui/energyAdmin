@@ -20,11 +20,10 @@ declare namespace API {
     //   city?: { label?: string; key?: string };
     // };
     // address?: string;
-    phone: string;
+    // phone?: string;
     id: number;
     avatar: string;
     nick_name: string;
-    name: string;
     role: string;
     token: string;
   };
@@ -70,11 +69,9 @@ declare namespace API {
 
   type LoginParams = {
     userName?: string;
-    pwd?: string;
+    password?: string;
     autoLogin?: boolean;
     type?: string;
-    phone?: string;
-    phone_code?: string;
   };
 
   type ErrorResponse = {

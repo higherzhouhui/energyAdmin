@@ -2,24 +2,22 @@
 /* eslint-disable */
 import { message } from 'antd';
 import request from 'umi-request';
-import { history } from 'umi';
 // request拦截器, 改变url 或 options.
 request.interceptors.request.use((url, options) => {
   let token = null;
   if (typeof window !== 'undefined') {
-    token = localStorage.getItem('tshs-token');
+    token = localStorage.getItem('x-token');
   }
   if (null === token) {
-    token = '5e73e5db36a34988';
+    token = 'test';
   }
   options.headers = {
     ...options.headers,
-    'Content-Type': 'application/json;charset=UTF-8',
-    AUTHENTICATION: token,
+    token: token,
   };
   options.timeout = 500000;
   return {
-    url: `/api/manageApi${url}`,
+    url: `/api${url}`,
     options: options,
   };
 });
@@ -28,13 +26,13 @@ request.interceptors.request.use((url, options) => {
 request.interceptors.response.use(async (response, options) => {
   // let result;
   const data = await response.clone().json();
-  if (data.code !== 'SUCCESS') {
-    message.error(data.message || data.msg);
+  if (data.errno !== 200) {
+    message.error(data.message);
   }
-  if (data.code === 'AUTHENTICATION_ERROR' || data.code === 'NOT_LOGIN') {
-    history.push('/user/login');
-  }
-  return data;
+  return {
+    ...data,
+    code: data.errno,
+  };
 });
 
 /** 获取当前的用户 GET /api/currentUser */
@@ -42,7 +40,7 @@ export async function currentUser(options?: { [key: string]: any }) {
   // const { initialState } = useModel('@@initialState');
   return request<{
     data: API.CurrentUser;
-  }>(`/webUser/getUserInfo`, {
+  }>(`/sys_user/${localStorage.getItem('x-user-id')}`, {
     method: 'GET',
     ...(options || {}),
   });
@@ -57,24 +55,14 @@ export async function outLogin(options?: { [key: string]: any }) {
 }
 
 /** 登录接口 POST /api/login/account */
-export async function login(params: API.LoginParams, options?: { [key: string]: any }) {
-  return request('/user/login', {
-    method: 'GET',
+export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
+  return request<API.LoginResult>('/sys_user/login', {
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    params: params,
+    data: body,
     ...(options || {}),
-  });
-}
-
-/** 获取验证码 */
-export async function getFakeCaptcha(phone: string) {
-  return request<API.LoginResult>('/user/sendCode', {
-    method: 'POST',
-    data: {
-      phone,
-    },
   });
 }
 

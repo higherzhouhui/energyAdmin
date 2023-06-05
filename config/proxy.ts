@@ -9,23 +9,23 @@
 export default {
   dev: {
     '/api/': {
-      target: 'http://101.132.170.45:8801',
+      target: 'http://wings-admin-api.capsid.one',
       changeOrigin: true,
-      pathRewrite: { '^/api': '/' },
+      pathRewrite: { '^': '' },
     },
   },
   test: {
     '/api/': {
-      target: 'http://101.132.170.45:8801',
+      target: 'http://wings-admin-api.capsid.one',
       changeOrigin: true,
-      pathRewrite: { '^/api': '/' },
+      pathRewrite: { '^': '' },
     },
   },
   pre: {
     '/api/': {
-      target: 'http://101.132.170.45',
+      target: 'http://wings-admin-api.capsid.one',
       changeOrigin: true,
-      pathRewrite: { '^/api': '/api' },
+      pathRewrite: { '^': '' },
     },
   },
 };

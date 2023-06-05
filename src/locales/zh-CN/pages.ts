@@ -1,5 +1,5 @@
 export default {
-  'pages.layouts.userLayout.title': 'X-因子系统',
+  'pages.layouts.userLayout.title': 'Capsid Wings后台管理系统',
   'pages.login.accountLogin.tab': '账户密码登录',
   'pages.login.accountLogin.errorMessage': '错误的用户名和密码',
   'pages.login.failure': '登录失败，请重试！',
@@ -12,10 +12,8 @@ export default {
   'pages.login.phoneLogin.errorMessage': '验证码错误',
   'pages.login.phoneNumber.placeholder': '请输入手机号！',
   'pages.login.phoneNumber.required': '手机号是必填项！',
-  'pages.login.pwd.required': '密码是必填项！',
   'pages.login.phoneNumber.invalid': '不合法的手机号！',
   'pages.login.captcha.placeholder': '请输入验证码！',
-  'pages.login.pwd.placeholder': '请输入密码！',
   'pages.login.captcha.required': '验证码是必填项！',
   'pages.login.phoneLogin.getVerificationCode': '获取验证码',
   'pages.getCaptchaSecondText': '秒后重新获取',
@@ -66,4 +64,8 @@ export default {
   'pages.searchTable.tenThousand': '万',
   'pages.searchTable.batchDeletion': '批量删除',
   'pages.searchTable.batchApproval': '批量审批',
+  'pages.accounts.add.username': '账号',
+  'pages.accounts.add.nice_name': '用户名',
+  'pages.accounts.add.password': '密码',
+  'pages.accounts.add.confirm_password': '密码',
 };

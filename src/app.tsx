@@ -1,8 +1,8 @@
-import RightContent from '@/components/RightContent';
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
 import type { RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
+import RightContent from '@/components/RightContent';
 import { currentUser as queryCurrentUser } from './services/login/api';
 
 const loginPath = '/user/login';
@@ -25,7 +25,7 @@ export async function getInitialState(): Promise<{
       const msg = await queryCurrentUser();
       return msg.data;
     } catch (error) {
-      // history.push(loginPath);
+      history.push(loginPath);
     }
     return undefined;
   };
@@ -53,10 +53,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
       const { location } = history;
       // 如果没有登录，重定向到 login
       if (!initialState?.currentUser && location.pathname !== loginPath) {
-        // history.push(loginPath);
-      }
-      const token = localStorage.getItem('tshs-token');
-      if (!token) {
         history.push(loginPath);
       }
     },

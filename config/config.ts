@@ -35,8 +35,12 @@ export default defineConfig({
   // umi routes: https://umijs.org/docs/routing
   routes: [
     {
+      path: '/',
+      redirect: '/wings/list',
+    },
+    {
       path: '/user',
-      layout: false,
+      layout: true,
       routes: [
         {
           path: '/user/login',
@@ -66,93 +70,121 @@ export default defineConfig({
       ],
     },
     {
-      path: '/account',
-      icon: 'User',
+      path: '/wings',
+      icon: 'table',
+      name: 'wings',
+      routes: [
+        {
+          path: '/wings',
+          redirect: '/wings/list',
+        },
+        {
+          name: 'wings-list',
+          path: '/wings/list',
+          component: './wings/list',
+        },
+        {
+          name: 'wings-upload',
+          path: '/wings/upload',
+          component: './wings/upload',
+        },
+        {
+          component: '404',
+        },
+      ],
+    },
+    // {
+    //   path: '/compose',
+    //   icon: 'send',
+    //   name: 'compose',
+    //   routes: [
+    //     {
+    //       path: '/compose',
+    //       redirect: '/compose/list',
+    //     },
+    //     {
+    //       name: 'compose-list',
+    //       path: '/compose/list',
+    //       component: './compose/list',
+    //     },
+    //   ],
+    // },
+    {
+      path: '/progress',
+      icon: 'pullRequest',
+      name: 'progress',
+      routes: [
+        {
+          path: '/progress',
+          redirect: '/progress/list',
+        },
+        {
+          name: 'progress-list',
+          path: '/progress/list',
+          component: './progress/list',
+        },
+        {
+          name: 'progress-info',
+          path: '/progress/mintInfo',
+          component: './progress/mintInfo',
+        },
+        {
+          name: 'progress-open',
+          path: '/progress/open',
+          component: './progress/open',
+        },
+        {
+          component: '404',
+        },
+      ],
+    },
+    {
+      path: '/accounts',
+      icon: 'UserAdd',
       name: 'account',
       routes: [
         {
-          path: '/account',
-          redirect: '/account/list',
+          path: '/accounts',
+          redirect: '/accounts/list',
         },
         {
-          name: 'account-list',
-          path: '/account/list',
-          component: './account/list',
+          path: '/accounts/list',
+          name: 'list',
+          component: './accounts/list',
+        },
+        {
+          path: '/accounts/add',
+          name: 'add',
+          component: './accounts/add',
+        },
+        {
+          path: '/accounts/center',
+          name: 'center',
+          component: './accounts/percenter',
+          hideInMenu: true,
+        },
+        {
+          path: '/accounts/changepwd',
+          name: 'changepwd',
+          component: './accounts/changepwd',
+          hideInMenu: true,
+        },
+        {
+          path: '/accounts/changepwd-result',
+          name: 'changepwd-result',
+          component: './accounts/changepwd-result',
+          hideInMenu: true,
+        },
+        {
+          path: '/accounts/addaccount-result',
+          name: 'addaccount-result',
+          component: './accounts/changepwd-result',
+          hideInMenu: true,
+        },
+        {
+          component: '404',
         },
       ],
-    },
-    {
-      path: '/netmanage',
-      icon: 'cloudSync',
-      name: 'netmanage',
-      routes: [
-        {
-          path: '/netmanage',
-          redirect: '/netmanage/message',
-        },
-        // {
-        //   name: 'python-manage',
-        //   path: '/netmanage/python',
-        //   component: './netmanage/python',
-        // },
-        {
-          name: 'message-manage',
-          path: '/netmanage/message',
-          component: './netmanage/message',
-        },
-        {
-          name: 'message-manage-detail',
-          path: '/netmanage/message/detail',
-          component: './netmanage/message/detail',
-          hideInMenu: true,
-        },
-        {
-          name: 'message-manage-add',
-          path: '/netmanage/message/add',
-          component: './netmanage/message/add',
-          hideInMenu: true,
-        },
-        {
-          name: 'doc-manage',
-          path: '/netmanage/document',
-          component: './netmanage/document',
-        },
-        {
-          name: 'doc-manage-detail',
-          path: '/netmanage/document/detail',
-          component: './netmanage/document/detail',
-          hideInMenu: true,
-        },
-        {
-          name: 'doc-manage-edit',
-          path: '/netmanage/document/edit',
-          component: './netmanage/document/edit',
-          hideInMenu: true,
-        },
-      ],
-    },
-    {
-      path: '/feedback',
-      icon: 'book',
-      name: 'feedback',
-      routes: [
-        {
-          path: '/feedback',
-          redirect: '/feedback/list',
-        },
-        {
-          name: 'list-feedback',
-          path: '/feedback/list',
-          component: './feedback/list',
-        },
-      ],
-    },
-    {
-      path: '/',
-      redirect: '/account/list',
-    },
-    {
-      component: '404',
     },
   ],
   // Theme for antd: https://ant.design/docs/react/customize-theme-cn
