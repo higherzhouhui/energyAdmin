@@ -129,10 +129,10 @@ const AccountList: React.FC = () => {
           pageSize: 10,
         }}
         request={async (params: TableListPagination) => {
-          const res: any = await rule({ pageNo: params.current, pageSize: params.pageSize });
+          const res: any = await rule({ pageNum: params.current, pageSize: params.pageSize });
           return {
             data: res?.data?.rows || [],
-            page: res?.data?.page?.pageNo,
+            page: res?.data?.page?.pageNum,
             success: true,
             total: res?.data?.page?.total,
           };

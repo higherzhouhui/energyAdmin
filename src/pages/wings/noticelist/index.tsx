@@ -5,13 +5,12 @@ import { ModalForm } from '@ant-design/pro-form';
 import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Drawer, Image, message, Popconfirm } from 'antd';
+import { Button, Drawer, Input, message, Modal, Popconfirm } from 'antd';
 import React, { useRef, useState } from 'react';
-import { Link } from 'umi';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
 import type { TableListItem, TableListPagination } from './data';
-import { removeRule, rule, updateRule } from './service';
+import { addRule, removeRule, rule, updateRule } from './service';
 import './style.less';
 /**
  * 更新节点
@@ -44,95 +43,52 @@ const handleUpdate = async (fields: FormValueType, currentRow?: TableListItem) =
 const handleRemove = async (selectedRows: TableListItem[], actionRef?: any) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
-  try {
-    const res = await removeRule({
-      id: selectedRows.map((row) => row.id),
-    });
-    hide();
-    if (res.errno === 200) {
-      message.success('删除成功，即将刷新');
-      if (actionRef) {
-        actionRef.current?.reloadAndRest?.();
+  selectedRows.forEach(async (row )=> {
+    try {
+      const res = await removeRule({
+        id: row.id,
+      });
+      hide();
+      if (res.code === 200) {
+        message.success('删除成功，即将刷新');
+        if (actionRef) {
+          actionRef.current?.reloadAndRest?.();
+        }
       }
+      return true;
+    } catch (error) {
+      hide();
+      message.error('删除失败，请重试');
+      return false;
     }
-    return true;
-  } catch (error) {
-    hide();
-    message.error('删除失败，请重试');
-    return false;
-  }
+  })
+  return true
 };
 
 const TableList: React.FC = () => {
   /** 新建窗口的弹窗 */
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   /** 分布更新窗口的弹窗 */
-
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<TableListItem>();
   const [selectedRowsState, setSelectedRows] = useState<TableListItem[]>([]);
-  /** 国际化配置 */
-  const [quantity, setQuantity] = useState({
-    current: 100,
-    total: 5000,
-  });
+  const [content, setContent] = useState('')
   const columns: ProColumns<TableListItem>[] = [
     {
       title: 'ID',
       dataIndex: 'id',
       tip: '唯一的 key',
-      hideInTable: true,
-      hideInSearch: true,
     },
     {
-      title: '编号',
-      dataIndex: 'no',
-      sorter: (a, b) => parseInt(b.no.replace('#', '')) - parseInt(a.no.replace('#', '')),
-      render: (dom, entity) => {
-        return (
-          <a
-            onClick={() => {
-              setCurrentRow(entity);
-              setShowDetail(true);
-            }}
-          >
-            {dom}
-          </a>
-        );
-      },
+      title: '内容',
+      dataIndex: 'content'
     },
     {
-      title: '图片',
-      dataIndex: 'path',
-      hideInSearch: true,
-      render: (_, record) => {
-        return (
-          <Image src={record.path} width={120} height={120} style={{ objectFit: 'contain' }} />
-        );
-      },
-    },
-    {
-      title: '上传时间',
-      dataIndex: 'create_time',
-      valueType: 'dateTime',
-      sorter: (a, b) => a.create_time - b.create_time,
-    },
-    {
-      title: '是否Mint',
-      dataIndex: 'minted',
-      sorter: (a, b) => a.minted - b.minted,
-      valueEnum: {
-        1: {
-          text: '是',
-          status: 'Success',
-        },
-        2: {
-          text: '否',
-          status: 'Error',
-        },
-      },
+      title: '创建时间',
+      dataIndex: 'createTime',
+      valueType: 'dateTime'
     },
     {
       title: '操作',
@@ -140,21 +96,23 @@ const TableList: React.FC = () => {
       valueType: 'option',
       hideInDescriptions: true,
       render: (_, record) => [
-        // <a
-        //   key="update"
-        //   onClick={() => {
-        //     handleUpdateModalVisible(true);
-        //     setCurrentRow(record);
-        //   }}
-        // >
-        //   修改
-        // </a>,
+        <a
+          key="update"
+          onClick={() => {
+            setContent(record.content)
+            handleModalVisible(true)
+            setCurrentRow(record);
+          }}
+        >
+          修改
+        </a>,
         // eslint-disable-next-line react/jsx-key
         <Popconfirm
           title="确认删除？"
           onConfirm={async () => {
             await handleRemove([record], actionRef);
           }}
+          key="delete"
         >
           <a style={{ color: 'red' }} key="delete">
             删除
@@ -163,48 +121,66 @@ const TableList: React.FC = () => {
       ],
     },
   ];
+  const addNewNotice = () => {
+    setContent('')
+    setCurrentRow(undefined)
+    handleModalVisible(true)
+  }
 
+  const handleOk = async () => {
+    const hide = message.loading(`正在${currentRow?.id ? '更新' : '新增'}`);
+    try {
+      const res = await addRule({
+        content: content,
+        id: currentRow?.id
+      });
+      handleModalVisible(false)
+      hide();
+      if (res.code === 200) {
+        message.success('操作成功，即将刷新');
+        if (actionRef) {
+          actionRef.current?.reloadAndRest?.();
+        }
+      }
+      return true;
+    } catch (error) {
+      hide();
+      message.error('操作失败，请重试');
+      return false;
+    }
+  }
+
+  const handInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value)
+  }
   return (
     <PageContainer>
       <ProTable<TableListItem, TableListPagination>
-        headerTitle={`已上传翅膀数量 ${quantity.current}/${quantity.total}`}
-        tooltip={`${quantity.total}个为上限`}
         actionRef={actionRef}
-        rowKey="no"
+        rowKey="id"
         search={false}
         dateFormatter="string"
         pagination={{
           pageSize: 10,
         }}
         toolBarRender={() => [
-          <Button type="primary" key="primary">
+          <Button type="primary" key="primary" onClick={() => addNewNotice()}>
             <PlusOutlined />
-            <Link
-              to={{
-                pathname: '/wings/upload',
-              }}
-              style={{ color: '#fff' }}
-            >
-              上传
-            </Link>
+            新增
           </Button>,
         ]}
         request={async (params: TableListPagination) => {
           const res: any = await rule({ pageNum: params.current, pageSize: params.pageSize });
-          setQuantity({
-            current: res?.data?.current,
-            total: res?.data?.total,
-          });
-          res?.data?.rows.map((row: any) => {
-            row.create_time = row.create_time * 1000;
-            row.minted = row.minted ? 1 : 2;
-            row.path = row.path.substr(row.path.indexOf('//'));
-          });
+          // res?.data?.list.map((row: any) => {
+          //   row.create_time = row.create_time * 1000;
+          //   row.minted = row.minted ? 1 : 2;
+          //   row.path = row.path.substr(row.path.indexOf('//'));
+          // });
           return {
-            data: res?.data?.rows || [],
-            page: res?.data?.page?.pageNum,
+            data: res?.data?.list || [],
+            page: res?.data?.pageNum,
             success: true,
-            total: res?.data?.page?.total,
+            total: res?.data?.totalSize,
           };
         }}
         columns={columns}
@@ -248,27 +224,15 @@ const TableList: React.FC = () => {
           </Popconfirm>
         </FooterToolbar>
       )}
-      <ModalForm
-        title={currentRow?.no}
+      <Modal
+        title={currentRow?.id ? '修改' : '新增'}
         width="600px"
         visible={createModalVisible}
-        onVisibleChange={handleModalVisible}
-        submitter={{
-          resetButtonProps: {
-            style: {
-              display: 'none',
-            },
-          },
-          submitButtonProps: {
-            style: {
-              display: 'none',
-            },
-          },
-        }}
+        onOk={() => handleOk()}
+        onCancel={() => handleModalVisible(false)}
       >
-        <img src={currentRow?.path} className="modal-img" />
-      </ModalForm>
-
+        <Input.TextArea rows={4} placeholder="请输入公告内容" maxLength={1000} value={content} onChange={(e) => handInputChange(e)}/>
+      </Modal>
       <UpdateForm
         onSubmit={async (value) => {
           const success = await handleUpdate(value, currentRow);

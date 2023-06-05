@@ -28,7 +28,7 @@ const loginOut = async () => {
       }),
     });
   }
-  localStorage.removeItem('x-token');
+  localStorage.removeItem('Access-Token');
   localStorage.removeItem('x-user-id');
 };
 
@@ -65,7 +65,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 
   const { currentUser } = initialState;
 
-  if (!currentUser || !currentUser.nick_name) {
+  if (!currentUser) {
     return loading;
   }
 
@@ -101,7 +101,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
           src={currentUser.avatar || 'https://joeschmoe.io/api/v1/random'}
           alt="avatar"
         />
-        <span className={`${styles.name} anticon`}>{currentUser.nick_name}</span>
+        <span className={`${styles.name} anticon`}>{currentUser.mobilePhone}</span>
       </span>
     </HeaderDropdown>
   );

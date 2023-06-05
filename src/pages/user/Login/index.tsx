@@ -2,7 +2,6 @@ import { login } from '@/services/login/api';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { LoginForm, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
 import { Alert, message } from 'antd';
-import md5 from 'js-md5';
 import React, { useState } from 'react';
 import { FormattedMessage, history, useIntl, useModel } from 'umi';
 
@@ -44,11 +43,11 @@ const Login: React.FC = () => {
       // 登录
       const { userName, password } = values;
       const msg = await login({
-        userName,
-        password: md5(password || ''),
+        accountName: userName,
+        password,
       });
       if (msg.code === 200) {
-        localStorage.setItem('x-token', msg.data?.token || '');
+        localStorage.setItem('Access-Token', msg.data?.token || '');
         localStorage.setItem('x-user-id', msg.data?.id + '' || '');
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
@@ -84,7 +83,7 @@ const Login: React.FC = () => {
       <div className={styles.content}>
         <LoginForm
           logo={<img alt="logo" src="/logo.png" />}
-          title="Capsid Wings"
+          title="正泰新能源"
           subTitle={intl.formatMessage({ id: 'pages.layouts.userLayout.title' })}
           initialValues={{
             autoLogin: true,

@@ -6,18 +6,18 @@ import request from 'umi-request';
 request.interceptors.request.use((url, options) => {
   let token = null;
   if (typeof window !== 'undefined') {
-    token = localStorage.getItem('x-token');
+    token = localStorage.getItem('Access-Token');
   }
   if (null === token) {
     token = 'test';
   }
   options.headers = {
     ...options.headers,
-    token: token,
+    'Access-Token': token,
   };
   options.timeout = 500000;
   return {
-    url: `/api${url}`,
+    url: `${url}`,
     options: options,
   };
 });
@@ -26,12 +26,12 @@ request.interceptors.request.use((url, options) => {
 request.interceptors.response.use(async (response, options) => {
   // let result;
   const data = await response.clone().json();
-  if (data.errno !== 200) {
+  if (data.code !== 200) {
     message.error(data.message);
   }
   return {
     ...data,
-    code: data.errno,
+    code: data.code,
   };
 });
 
@@ -40,7 +40,7 @@ export async function currentUser(options?: { [key: string]: any }) {
   // const { initialState } = useModel('@@initialState');
   return request<{
     data: API.CurrentUser;
-  }>(`/sys_user/${localStorage.getItem('x-user-id')}`, {
+  }>(`/energy/user/personalInfo`, {
     method: 'GET',
     ...(options || {}),
   });
@@ -56,8 +56,8 @@ export async function outLogin(options?: { [key: string]: any }) {
 
 /** 登录接口 POST /api/login/account */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
-  return request<API.LoginResult>('/sys_user/login', {
-    method: 'POST',
+  return request<API.LoginResult>('/admin/administer/login', {
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },

@@ -11,7 +11,7 @@ export async function getFakeCaptcha(
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.FakeCaptcha>('/api/login/captcha', {
+  return request<API.FakeCaptcha>('/admin/login/captcha', {
     method: 'GET',
     params: {
       ...params,

@@ -8,22 +8,27 @@
  */
 export default {
   dev: {
-    '/api/': {
-      target: 'http://wings-admin-api.capsid.one',
+    '/admin/': {
+      target: 'http://20.205.107.229:8080',
+      changeOrigin: true,
+      pathRewrite: { '^': '' },
+    },
+    '/energy/': {
+      target: 'http://20.205.107.229:8080',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
   },
   test: {
-    '/api/': {
-      target: 'http://wings-admin-api.capsid.one',
+    '/admin/': {
+      target: 'http://20.205.107.229:8080',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
   },
   pre: {
-    '/api/': {
-      target: 'http://wings-admin-api.capsid.one',
+    '/admin/': {
+      target: 'http://20.205.107.229:8080',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },

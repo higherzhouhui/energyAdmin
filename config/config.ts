@@ -36,7 +36,7 @@ export default defineConfig({
   routes: [
     {
       path: '/',
-      redirect: '/wings/list',
+      redirect: '/wings/noticelist',
     },
     {
       path: '/user',
@@ -76,12 +76,27 @@ export default defineConfig({
       routes: [
         {
           path: '/wings',
-          redirect: '/wings/list',
+          redirect: '/wings/noticelist',
         },
         {
-          name: 'wings-list',
-          path: '/wings/list',
-          component: './wings/list',
+          name: 'wings-noticelist',
+          path: '/wings/noticelist',
+          component: './wings/noticelist',
+        },
+        {
+          name: 'wings-bannerlist',
+          path: '/wings/bannerlist',
+          component: './wings/bannerlist',
+        },
+        {
+          name: 'wings-newslist',
+          path: '/wings/newslist',
+          component: './wings/newslist',
+        },
+        {
+          name: 'wings-projectlist',
+          path: '/wings/projectlist',
+          component: './wings/projectlist',
         },
         {
           name: 'wings-upload',

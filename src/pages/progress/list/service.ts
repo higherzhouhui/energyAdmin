@@ -8,7 +8,7 @@ export async function rule(
   params: {
     // query
     /** 当前的页码 */
-    pageNo?: number;
+    pageNum?: number;
     /** 页面的容量 */
     pageSize?: number;
   },

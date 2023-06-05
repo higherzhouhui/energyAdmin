@@ -1,6 +1,6 @@
 {
-  "name": "Capsid Wings Dashboard",
-  "short_name": "Capsid Wings Dashboard",
+  "name": "正泰新能源 Dashboard",
+  "short_name": "正泰新能源 Dashboard",
   "display": "standalone",
   "start_url": "./?utm_source=homescreen",
   "theme_color": "#002140",

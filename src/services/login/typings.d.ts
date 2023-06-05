@@ -3,7 +3,7 @@
 
 declare namespace API {
   type CurrentUser = {
-    // name?: string;
+    mobilePhone?: string;
     // avatar?: string;
     // userid?: string;
     // email?: string;
@@ -72,6 +72,7 @@ declare namespace API {
     password?: string;
     autoLogin?: boolean;
     type?: string;
+    accountName?: string;
   };
 
   type ErrorResponse = {
