@@ -99,6 +99,16 @@ export default defineConfig({
           component: './wings/projectlist',
         },
         {
+          name: 'wings-tuiguang',
+          path: '/wings/tuiguang',
+          component: './wings/list',
+        },
+        {
+          name: 'wings-baseinfo',
+          path: '/wings/baseinfo',
+          component: './wings/baseinfo',
+        },
+        {
           name: 'wings-upload',
           path: '/wings/upload',
           component: './wings/upload',
@@ -108,51 +118,51 @@ export default defineConfig({
         },
       ],
     },
-    // {
-    //   path: '/compose',
-    //   icon: 'send',
-    //   name: 'compose',
-    //   routes: [
-    //     {
-    //       path: '/compose',
-    //       redirect: '/compose/list',
-    //     },
-    //     {
-    //       name: 'compose-list',
-    //       path: '/compose/list',
-    //       component: './compose/list',
-    //     },
-    //   ],
-    // },
     {
-      path: '/progress',
-      icon: 'pullRequest',
-      name: 'progress',
+      path: '/withdraw',
+      icon: 'send',
+      name: 'withdraw',
       routes: [
         {
-          path: '/progress',
-          redirect: '/progress/list',
+          path: '/withdraw',
+          redirect: '/withdraw/list',
         },
         {
-          name: 'progress-list',
-          path: '/progress/list',
-          component: './progress/list',
-        },
-        {
-          name: 'progress-info',
-          path: '/progress/mintInfo',
-          component: './progress/mintInfo',
-        },
-        {
-          name: 'progress-open',
-          path: '/progress/open',
-          component: './progress/open',
-        },
-        {
-          component: '404',
+          name: 'withdraw-list',
+          path: '/withdraw/list',
+          component: './withdraw/list',
         },
       ],
     },
+    // {
+    //   path: '/progress',
+    //   icon: 'pullRequest',
+    //   name: 'progress',
+    //   routes: [
+    //     {
+    //       path: '/progress',
+    //       redirect: '/progress/list',
+    //     },
+    //     {
+    //       name: 'progress-list',
+    //       path: '/progress/list',
+    //       component: './progress/list',
+    //     },
+    //     {
+    //       name: 'progress-info',
+    //       path: '/progress/mintInfo',
+    //       component: './progress/mintInfo',
+    //     },
+    //     {
+    //       name: 'progress-open',
+    //       path: '/progress/open',
+    //       component: './progress/open',
+    //     },
+    //     {
+    //       component: '404',
+    //     },
+    //   ],
+    // },
     {
       path: '/accounts',
       icon: 'UserAdd',

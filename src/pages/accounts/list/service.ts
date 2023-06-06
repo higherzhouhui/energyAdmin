@@ -19,7 +19,7 @@ export async function rule(
     /** 列表的内容总数 */
     total?: number;
     success?: boolean;
-  }>('/sys_user', {
+  }>('/admin/administer/getPageList', {
     method: 'GET',
     params: {
       ...params,

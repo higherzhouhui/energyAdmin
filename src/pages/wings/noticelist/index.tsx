@@ -1,7 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
-import { ModalForm } from '@ant-design/pro-form';
 import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -263,15 +262,15 @@ const TableList: React.FC = () => {
         }}
         closable={false}
       >
-        {currentRow?.no && (
+        {currentRow?.id && (
           <ProDescriptions<TableListItem>
             column={2}
-            title={currentRow?.no}
+            title={currentRow?.id}
             request={async () => ({
               data: currentRow || {},
             })}
             params={{
-              id: currentRow?.no,
+              id: currentRow?.id,
             }}
             columns={columns as ProDescriptionsItemProps<TableListItem>[]}
           />

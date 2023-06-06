@@ -26,6 +26,9 @@ declare namespace API {
     nick_name: string;
     role: string;
     token: string;
+    accountName?: string;
+    comment?: string;
+    type?: number;
   };
 
   type LoginResult = {

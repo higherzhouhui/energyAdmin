@@ -38,12 +38,15 @@ request.interceptors.response.use(async (response, options) => {
 /** 获取当前的用户 GET /api/currentUser */
 export async function currentUser(options?: { [key: string]: any }) {
   // const { initialState } = useModel('@@initialState');
-  return request<{
-    data: API.CurrentUser;
-  }>(`/energy/user/personalInfo`, {
-    method: 'GET',
-    ...(options || {}),
-  });
+  // return request<{
+  //   data: API.CurrentUser;
+  // }>(`/admin/administer/getPageList`, {
+  //   method: 'GET',
+  //   ...(options || {}),
+  // });
+  return new Promise(rosolve => {
+    rosolve({accountName: localStorage.getItem('accountName')})
+  })
 }
 
 /** 退出登录接口 POST /api/login/outLogin */
@@ -57,11 +60,11 @@ export async function outLogin(options?: { [key: string]: any }) {
 /** 登录接口 POST /api/login/account */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
   return request<API.LoginResult>('/admin/administer/login', {
-    method: 'PUT',
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    data: body,
+    params: body,
     ...(options || {}),
   });
 }

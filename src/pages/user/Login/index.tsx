@@ -49,6 +49,7 @@ const Login: React.FC = () => {
       if (msg.code === 200) {
         localStorage.setItem('Access-Token', msg.data?.token || '');
         localStorage.setItem('x-user-id', msg.data?.id + '' || '');
+        localStorage.setItem('accountName', userName || '');
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
           defaultMessage: '登录成功！',
@@ -62,7 +63,6 @@ const Login: React.FC = () => {
         history.push(redirect || '/');
         return;
       }
-      console.log(msg);
       // 如果失败去设置用户错误信息
       setUserLoginState(msg);
     } catch (error) {

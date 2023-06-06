@@ -16,7 +16,7 @@ export type GlobalHeaderRightProps = {
  * 退出登录，并且将当前的 url 保存
  */
 const loginOut = async () => {
-  await outLogin();
+  // await outLogin();
   const { query = {}, pathname } = history.location;
   const { redirect } = query;
   // Note: There may be security issues, please note
@@ -101,7 +101,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
           src={currentUser.avatar || 'https://joeschmoe.io/api/v1/random'}
           alt="avatar"
         />
-        <span className={`${styles.name} anticon`}>{currentUser.mobilePhone}</span>
+        <span className={`${styles.name} anticon`}>{currentUser.accountName}</span>
       </span>
     </HeaderDropdown>
   );

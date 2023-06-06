@@ -19,7 +19,7 @@ export async function rule(
     /** 列表的内容总数 */
     total?: number;
     success?: boolean;
-  }>('/wings', {
+  }>('/admin/project/getProjectList', {
     method: 'GET',
     params: {
       ...params,
@@ -39,7 +39,7 @@ export async function updateRule(data: { [key: string]: any }, options?: { [key:
 
 /** 新建规则 POST /api/rule */
 export async function addRule(data: { [key: string]: any }, options?: { [key: string]: any }) {
-  return request<TableListItem>('/api/rule', {
+  return request<Record<string, any>>('/admin/project/saveOrUpdate', {
     data,
     method: 'POST',
     ...(options || {}),
@@ -47,8 +47,8 @@ export async function addRule(data: { [key: string]: any }, options?: { [key: st
 }
 
 /** 删除规则 DELETE /api/rule */
-export async function removeRule(data: { id: number[] }, options?: { [key: string]: any }) {
-  return request<Record<string, any>>(`/wings`, {
+export async function removeRule(data: { id: number }, options?: { [key: string]: any }) {
+  return request<Record<string, any>>(`/admin/project/delete/${data.id}`, {
     data,
     method: 'DELETE',
     ...(options || {}),

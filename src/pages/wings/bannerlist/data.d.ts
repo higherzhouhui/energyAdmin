@@ -1,9 +1,7 @@
 export type TableListItem = {
   id: number;
-  no: string;
-  create_time: number;
-  minted: number;
-  path: string;
+  image: string;
+  url: string;
 };
 
 export type TableListPagination = {

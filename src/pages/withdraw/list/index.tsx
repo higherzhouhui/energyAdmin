@@ -60,34 +60,32 @@ const TableList: React.FC = () => {
       tip: '唯一的 key',
     },
     {
-      title: '标题',
-      dataIndex: 'title',
+      title: '姓名',
+      dataIndex: 'name',
     },
     {
-      title: '图片',
-      dataIndex: 'image',
-      hideInSearch: true,
-      render: (_, record) => {
-        return (
-          <Image src={record.image} width={120} height={120} style={{ objectFit: 'contain' }} />
-        );
-      },
+      title: '金额',
+      dataIndex: 'amount',
+    }, 
+    {
+      title: '手机号',
+      dataIndex: 'phone',
+    },{
+      title: '银行名称',
+      dataIndex: 'bankName',
+    }, {
+      title: '银行卡号',
+      dataIndex: 'bankCode',
+    }, {
+      title: '状态',
+      dataIndex: 'status',
+    }, {
+      title: '手续费',
+      dataIndex: 'serviceCharge',
     },
     {
-      title: '价格',
-      dataIndex: 'price',
-    },
-    {
-      title: '正泰补贴',
-      dataIndex: 'chntSubsidy',
-    },
-    {
-      title: '每日收益',
-      dataIndex: 'dayEarnings',
-    },
-    {
-      title: '周期（天）',
-      dataIndex: 'period',
+      title: '资金来源',
+      dataIndex: 'typeStr',
     },
     {
       title: '创建时间',
@@ -167,7 +165,7 @@ const TableList: React.FC = () => {
       request('/admin/upload/uploadImage', { method: 'POST', data: formData })
         .then((data) => {
           const _response = { name: file.name, status: 'done', path: data.data };
-          handleChange(data.data, 'image');
+          handleChange(data.data, 'icon');
           //请求成功后把file赋值上去
           onSuccess(_response, file);
         })
@@ -185,14 +183,29 @@ const TableList: React.FC = () => {
         pagination={{
           pageSize: 10,
         }}
-        toolBarRender={() => [
-          <Button type="primary" key="primary" onClick={() => addNewNotice()}>
-            <PlusOutlined />
-            新增
-          </Button>,
-        ]}
         request={async (params: TableListPagination) => {
           const res: any = await rule({ pageNum: params.current, pageSize: params.pageSize });
+          (res?.data?.list || []).map((item: any) => {
+            let status = '审核中'
+            if (item.auditStatus == 1) {
+              status = '通过'
+            } else {
+              status = '驳回'
+            }
+            item.status = status
+            let typeStr = '分红钱包'
+            if (item.type == 'bonus') {
+              typeStr = '分红钱包'
+            } else if (item.type == 'extend') {
+              typeStr = '推广钱包'
+            } else if (item.type == 'earnings') {
+              typeStr = '收益'
+            } else if (item.type == 'chnt') {
+              typeStr = '正泰补贴'
+            }
+            item.status = status
+            item.typeStr = typeStr
+          })
           return {
             data: res?.data?.list || [],
             page: res?.data?.pageNum,
@@ -248,9 +261,6 @@ const TableList: React.FC = () => {
         onCancel={() => handleModalVisible(false)}
       >
         <ProForm formRef={formRef} submitter={false}>
-          <Form.Item label="标题">
-            <Input value={currentRow?.title} onChange={(e) => handleChange(e.target.value, 'title')}/>
-          </Form.Item>
           <ProFormUploadButton
             label="选择图片"
             max={1}
@@ -260,21 +270,15 @@ const TableList: React.FC = () => {
             }}
           />
           {
-            currentRow?.image ? <Form.Item label="">
-            <Input value={currentRow?.image} readOnly />
+            currentRow?.icon ? <Form.Item label="">
+            <Input value={currentRow?.icon} readOnly />
           </Form.Item> : null
           }
-          <Form.Item label="价格">
-            <Input type='number' value={currentRow?.price} onChange={(e) => handleChange(e.target.value, 'price')}/>
+          <Form.Item label="邀请人数">
+            <Input type='number' value={currentRow?.inviteNum} onChange={(e) => handleChange(e.target.value, 'inviteNum')}/>
           </Form.Item>
-          <Form.Item label="正泰补贴">
-            <Input type='number' value={currentRow?.chntSubsidy} onChange={(e) => handleChange(e.target.value, 'chntSubsidy')}/>
-          </Form.Item>
-          <Form.Item label="每日收益">
-            <Input type='number' value={currentRow?.dayEarnings} onChange={(e) => handleChange(e.target.value, 'dayEarnings')}/>
-          </Form.Item>
-          <Form.Item label="周期">
-            <Input type='number' value={currentRow?.period} onChange={(e) => handleChange(e.target.value, 'period')} addonAfter="天"/>
+          <Form.Item label="奖励">
+            <Input type='number' value={currentRow?.amount} onChange={(e) => handleChange(e.target.value, 'amount')}/>
           </Form.Item>
         </ProForm>
       </Modal>
