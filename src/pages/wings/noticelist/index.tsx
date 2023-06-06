@@ -79,20 +79,24 @@ const TableList: React.FC = () => {
       title: 'ID',
       dataIndex: 'id',
       tip: '唯一的 key',
+      className: 'fullClass',
     },
     {
       title: '内容',
-      dataIndex: 'content'
+      dataIndex: 'content',
+      className: 'textAreaClass'
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
+      className: 'fullClass',
       valueType: 'dateTime'
     },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
+      className: 'fullClass',
       hideInDescriptions: true,
       render: (_, record) => [
         <a

@@ -1,14 +1,38 @@
 import { PlusOutlined } from '@ant-design/icons';
+import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
+import ProDescriptions from '@ant-design/pro-descriptions';
 import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Form, Image, Input, message, Modal, Popconfirm } from 'antd';
+import { Badge, Button, Drawer, Form, Image, Input, message, Modal, Popconfirm } from 'antd';
 import React, { useRef, useState } from 'react';
+import type { FormValueType } from './components/UpdateForm';
+import UpdateForm from './components/UpdateForm';
 import type { TableListItem, TableListPagination } from './data';
-import { addRule, removeRule, rule } from './service';
-import ProForm, { ProFormUploadButton } from '@ant-design/pro-form';
-import { request } from 'umi';
+import { replayRule, removeRule, rule, updateRule, getDetailRule } from './service';
+import ProForm from '@ant-design/pro-form';
+/**
+ * 更新节点
+ *
+ * @param fields
+ */
 
+const handleUpdate = async (fields: FormValueType, currentRow?: TableListItem) => {
+  const hide = message.loading('正在配置', 50);
+  try {
+    await updateRule({
+      ...currentRow,
+      ...fields,
+    });
+    hide();
+    message.success('配置成功');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('配置失败请重试！');
+    return false;
+  }
+};
 /**
  * 删除节点
  *
@@ -44,52 +68,68 @@ const TableList: React.FC = () => {
   /** 新建窗口的弹窗 */
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   /** 分布更新窗口的弹窗 */
+  const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
+  const [showDetail, setShowDetail] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<TableListItem | any>();
+  const [currentRow, setCurrentRow] = useState<TableListItem>();
   const [selectedRowsState, setSelectedRows] = useState<TableListItem[]>([]);
-  const formRef = useRef<any>()
+  const [content, setContent] = useState('');
+  const [historyContent, sethistoryContent] = useState('');
+  const formRef = useRef<any>();
   const handleUpdateRecord = (record: TableListItem) => {
     setCurrentRow(record);
     handleModalVisible(true);
     formRef?.current?.resetFields();
-  }
-  const columns: ProColumns<TableListItem>[] = [
+    getDetailRule({ form: record.form }).then((res) => {
+      sethistoryContent('');
+    });
+  };
+  const columns: ProColumns<any>[] = [
     {
       title: 'ID',
       dataIndex: 'id',
       tip: '唯一的 key',
+      hideInTable: true,
     },
     {
-      title: '姓名',
-      dataIndex: 'name',
+      title: '发送人Id',
+      dataIndex: 'form',
+      className: 'fullClass',
     },
     {
-      title: '金额',
-      dataIndex: 'amount',
-    }, 
-    {
-      title: '手机号',
-      dataIndex: 'phone',
-    },{
-      title: '银行名称',
-      dataIndex: 'bankName',
-    }, {
-      title: '银行卡号',
-      dataIndex: 'bankCode',
-    }, {
-      title: '状态',
-      dataIndex: 'status',
-    }, {
-      title: '手续费',
-      dataIndex: 'serviceCharge',
+      title: '消息内容',
+      dataIndex: 'content',
+      className: 'textAreaClass',
     },
     {
-      title: '资金来源',
-      dataIndex: 'typeStr',
+      title: '发送人头像',
+      dataIndex: 'formPhoto',
+      className: 'fullClass',
+      render: (_, record) => {
+        return (
+          <Image src={record.formPhoto} width={120} height={120} style={{ objectFit: 'contain' }} />
+        );
+      },
     },
     {
-      title: '创建时间',
+      title: '接收人Id',
+      dataIndex: 'to',
+      className: 'fullClass',
+    },
+    {
+      title: '接收人头像',
+      dataIndex: 'toPhoto',
+      className: 'fullClass',
+      render: (_, record) => {
+        return (
+          <Image src={record.toPhoto} width={120} height={120} style={{ objectFit: 'contain' }} />
+        );
+      },
+    },
+    {
+      title: '发送时间',
       dataIndex: 'createTime',
+      className: 'fullClass',
     },
     {
       title: '操作',
@@ -97,39 +137,32 @@ const TableList: React.FC = () => {
       valueType: 'option',
       hideInDescriptions: true,
       render: (_, record) => [
-        <a
-          key="update"
-          onClick={() => {
-            handleUpdateRecord(record)
-          }}
-        >
-          修改
-        </a>,
-        // eslint-disable-next-line react/jsx-key
-        <Popconfirm
-          title="确认删除？"
-          onConfirm={async () => {
-            await handleRemove([record], actionRef);
-          }}
-          key="delete"
-        >
-          <a style={{ color: 'red' }} key="delete">
-            删除
+        <Badge dot={!record.stat} key="update">
+          <a
+            onClick={() => {
+              handleUpdateRecord(record);
+            }}
+          >
+            回复
           </a>
-        </Popconfirm>,
+        </Badge>,
       ],
     },
   ];
   const addNewNotice = () => {
-    setCurrentRow(Object.assign({}, {}));
+    setCurrentRow(undefined);
     handleModalVisible(true);
     formRef?.current?.resetFields();
   };
 
   const handleOk = async () => {
-    const hide = message.loading(`正在${currentRow?.id ? '更新' : '新增'}`);
+    const hide = message.loading('正在回复');
     try {
-      const res = await addRule(currentRow);
+      const res = await replayRule({
+        content: content,
+        to: currentRow?.form,
+        type: 1,
+      });
       handleModalVisible(false);
       hide();
       if (res.code === 200) {
@@ -137,8 +170,6 @@ const TableList: React.FC = () => {
         if (actionRef) {
           actionRef.current?.reloadAndRest?.();
         }
-      } else {
-        message.error(res.msg);
       }
       return true;
     } catch (error) {
@@ -146,31 +177,6 @@ const TableList: React.FC = () => {
       message.error('操作失败，请重试');
       return false;
     }
-  };
-  const handleChange = (value: any, attar: string) => {
-    const newRow = currentRow
-    newRow[attar] = value
-    setCurrentRow(Object.assign({}, newRow))
-  }
-  const Upload = {
-    //数量
-    maxCount: 1,
-    accept: 'image/*',
-    customRequest: (options: any) => {
-      const { onSuccess, onError, file } = options;
-      const formData = new FormData();
-      formData.append('file', file);
-      // /upload为图片上传的地址，后台只需要一个图片的path
-      // name，path，status是组件上传需要的格式需要自己去拼接
-      request('/admin/upload/uploadImage', { method: 'POST', data: formData })
-        .then((data) => {
-          const _response = { name: file.name, status: 'done', path: data.data };
-          handleChange(data.data, 'icon');
-          //请求成功后把file赋值上去
-          onSuccess(_response, file);
-        })
-        .catch(onError);
-    },
   };
 
   return (
@@ -183,33 +189,14 @@ const TableList: React.FC = () => {
         pagination={{
           pageSize: 10,
         }}
-        scroll={{
-          x: 1400,
-          y: document?.body?.clientHeight - 390,
-        }}
+        toolBarRender={() => [
+          <Button type="primary" key="primary" onClick={() => addNewNotice()}>
+            <PlusOutlined />
+            新增
+          </Button>,
+        ]}
         request={async (params: TableListPagination) => {
           const res: any = await rule({ pageNum: params.current, pageSize: params.pageSize });
-          (res?.data?.list || []).map((item: any) => {
-            let status = '审核中'
-            if (item.auditStatus == 1) {
-              status = '通过'
-            } else {
-              status = '驳回'
-            }
-            item.status = status
-            let typeStr = '分红钱包'
-            if (item.type == 'bonus') {
-              typeStr = '分红钱包'
-            } else if (item.type == 'extend') {
-              typeStr = '推广钱包'
-            } else if (item.type == 'earnings') {
-              typeStr = '收益'
-            } else if (item.type == 'chnt') {
-              typeStr = '正泰补贴'
-            }
-            item.status = status
-            item.typeStr = typeStr
-          })
           return {
             data: res?.data?.list || [],
             page: res?.data?.pageNum,
@@ -259,33 +246,63 @@ const TableList: React.FC = () => {
         </FooterToolbar>
       )}
       <Modal
-        title={currentRow?.id ? '修改' : '新增'}
+        title="回复"
         visible={createModalVisible}
         onOk={() => handleOk()}
         onCancel={() => handleModalVisible(false)}
       >
         <ProForm formRef={formRef} submitter={false}>
-          <ProFormUploadButton
-            label="选择图片"
-            max={1}
-            name="image"
-            fieldProps={{
-              ...Upload,
-            }}
-          />
-          {
-            currentRow?.icon ? <Form.Item label="">
-            <Input value={currentRow?.icon} readOnly />
-          </Form.Item> : null
-          }
-          <Form.Item label="邀请人数">
-            <Input type='number' value={currentRow?.inviteNum} onChange={(e) => handleChange(e.target.value, 'inviteNum')}/>
+          <Form.Item label="历史记录">
+            <Input.TextArea value={historyContent} />
           </Form.Item>
-          <Form.Item label="奖励">
-            <Input type='number' value={currentRow?.amount} onChange={(e) => handleChange(e.target.value, 'amount')}/>
+          <Form.Item>
+            <Input.TextArea value={content} onChange={(e) => setContent(e.target.value)} />
           </Form.Item>
         </ProForm>
       </Modal>
+      <UpdateForm
+        onSubmit={async (value) => {
+          const success = await handleUpdate(value, currentRow);
+          if (success) {
+            handleUpdateModalVisible(false);
+            setCurrentRow(undefined);
+
+            if (actionRef.current) {
+              actionRef.current.reload();
+            }
+          }
+        }}
+        onCancel={() => {
+          handleUpdateModalVisible(false);
+          setCurrentRow(undefined);
+        }}
+        updateModalVisible={updateModalVisible}
+        values={currentRow || {}}
+      />
+
+      <Drawer
+        width={600}
+        visible={showDetail}
+        onClose={() => {
+          setCurrentRow(undefined);
+          setShowDetail(false);
+        }}
+        closable={false}
+      >
+        {currentRow?.id && (
+          <ProDescriptions<TableListItem>
+            column={2}
+            title={currentRow?.id}
+            request={async () => ({
+              data: currentRow || {},
+            })}
+            params={{
+              id: currentRow?.id,
+            }}
+            columns={columns as ProDescriptionsItemProps<TableListItem>[]}
+          />
+        )}
+      </Drawer>
     </PageContainer>
   );
 };

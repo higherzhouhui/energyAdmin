@@ -2,7 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Form, Input, message, Modal, Select, Switch } from 'antd';
+import { Button, Form, Input, message, Modal, Popconfirm, Switch } from 'antd';
 import React, { useRef, useState } from 'react';
 import { Link } from 'umi';
 import type { TableListItem, TableListPagination } from './data';
@@ -121,14 +121,17 @@ const AccountList: React.FC = () => {
         >
           修改
         </a>,
-        <a
-          key="delete"
-          onClick={() => {
-            handleRemove(record.id)
+        <Popconfirm
+          title="确认删除？"
+          onConfirm={async () => {
+            await handleRemove(record.id);
           }}
+          key="delete"
         >
-          删除
-        </a>,
+          <a style={{ color: 'red' }} key="delete">
+            删除
+          </a>
+        </Popconfirm>,
       ],
     },
   ];

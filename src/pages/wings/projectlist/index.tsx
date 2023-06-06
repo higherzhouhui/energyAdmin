@@ -185,6 +185,10 @@ const TableList: React.FC = () => {
         pagination={{
           pageSize: 10,
         }}
+        scroll={{
+          x: 1400,
+          y: document?.body?.clientHeight - 390,
+        }}
         toolBarRender={() => [
           <Button type="primary" key="primary" onClick={() => addNewNotice()}>
             <PlusOutlined />

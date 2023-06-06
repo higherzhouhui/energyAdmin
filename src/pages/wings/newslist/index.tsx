@@ -11,6 +11,7 @@ import UpdateForm from './components/UpdateForm';
 import type { TableListItem, TableListPagination } from './data';
 import { addRule, removeRule, rule, updateRule } from './service';
 import ProForm, { ProFormUploadButton } from '@ant-design/pro-form';
+import WangEditor from '@/components/Editor';
 import { request } from 'umi';
 /**
  * 更新节点
@@ -46,7 +47,7 @@ const handleRemove = async (selectedRows: TableListItem[], actionRef?: any) => {
   selectedRows.forEach(async (row) => {
     try {
       const res = await removeRule({
-        id: row.id,
+        id: row.id || '',
       });
       hide();
       if (res.code === 200) {
@@ -72,18 +73,11 @@ const TableList: React.FC = () => {
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<TableListItem>();
+  const [currentRow, setCurrentRow] = useState<any>({});
   const [selectedRowsState, setSelectedRows] = useState<TableListItem[]>([]);
-  const [image, setImage] = useState('');
-  const [url, setUrl] = useState('');
-  const onChangeUrl = (e: any) => {
-    setUrl(e.target.value);
-  };
   const formRef = useRef<any>()
   const handleUpdateRecord = (record: TableListItem) => {
     setCurrentRow(record);
-    setImage(record.image)
-    setUrl(record.url)
     handleModalVisible(true);
     formRef?.current?.resetFields();
   }
@@ -94,7 +88,12 @@ const TableList: React.FC = () => {
       tip: '唯一的 key',
     },
     {
-      title: '图片',
+      title: '标题',
+      dataIndex: 'title',
+      className: 'fullClass',
+    },
+    {
+      title: '封面',
       dataIndex: 'image',
       hideInSearch: true,
       render: (_, record) => {
@@ -104,13 +103,25 @@ const TableList: React.FC = () => {
       },
     },
     {
-      title: '跳转地址',
-      dataIndex: 'url',
+      title: '内容',
+      dataIndex: 'content',
+      className: 'textAreaClass'
+    },
+    {
+      title: '发布方',
+      dataIndex: 'publisher',
+      className: 'fullClass'
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'createTime',
+      className: 'fullClass'
     },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
+      className: 'fullClass',
       hideInDescriptions: true,
       render: (_, record) => [
         <a
@@ -137,20 +148,14 @@ const TableList: React.FC = () => {
     },
   ];
   const addNewNotice = () => {
-    setCurrentRow(undefined);
-    setImage('')
-    setUrl('')
+    setCurrentRow({});
     handleModalVisible(true);
     formRef?.current?.resetFields();
   };
   const handleOk = async () => {
     const hide = message.loading(`正在${currentRow?.id ? '更新' : '新增'}`);
     try {
-      const res = await addRule({
-        image: image,
-        url: url,
-        id: currentRow?.id,
-      });
+      const res = await addRule(currentRow);
       handleModalVisible(false);
       hide();
       if (res.code === 200) {
@@ -166,7 +171,20 @@ const TableList: React.FC = () => {
       return false;
     }
   };
-
+  const handleChange = (value: any, attar: string) => {
+    const newRow = currentRow || {}
+    newRow[attar] = value
+    setCurrentRow(Object.assign({}, newRow))
+  }
+  const removeHtmlTag = (content?: string) => {
+    if (typeof content === 'string') {
+      const reg = new RegExp('<[^>]*>', 'g');
+      let tStr = content.replace(reg, '');
+      tStr = tStr?.replace('&nbsp;', ''); // 过滤空格
+      return tStr;
+    }
+    return '';
+  };
   const Upload = {
     //数量
     maxCount: 1,
@@ -180,7 +198,7 @@ const TableList: React.FC = () => {
       request('/admin/upload/uploadImage', { method: 'POST', data: formData })
         .then((data) => {
           const _response = { name: file.name, status: 'done', path: data.data };
-          setImage(data.data);
+          handleChange(data.data, 'image')
           //请求成功后把file赋值上去
           onSuccess(_response, file);
         })
@@ -206,6 +224,9 @@ const TableList: React.FC = () => {
         ]}
         request={async (params: TableListPagination) => {
           const res: any = await rule({ pageNum: params.current, pageSize: params.pageSize });
+          (res?.data?.list || []).map((item: any) => {
+            item.content = removeHtmlTag(item.content)
+          })
           return {
             data: res?.data?.list || [],
             page: res?.data?.pageNum,
@@ -258,17 +279,32 @@ const TableList: React.FC = () => {
         title={currentRow?.id ? '修改' : '新增'}
         visible={createModalVisible}
         onOk={() => handleOk()}
+        width={'80%'}
         onCancel={() => handleModalVisible(false)}
       >
-        <ProForm formRef={formRef}>
+        <ProForm formRef={formRef} style={{height: '650px', overflow: 'auto'}} submitter={false}>
           <ProFormUploadButton
-            label="选择图片"
+            label="选择封面"
             max={1}
             name="image"
             fieldProps={{
               ...Upload,
             }}
           />
+          {
+            currentRow.image ? <Form.Item label=''>
+            <Input value={currentRow.image} readOnly/>
+          </Form.Item> : null
+          }
+          <Form.Item label='标题'>
+            <Input value={currentRow?.title} onChange={(e) => handleChange(e.target.value, 'title')}/>
+          </Form.Item>
+          <Form.Item label='来源'>
+          <Input value={currentRow?.publisher} onChange={(e) => handleChange(e.target.value, 'publisher')}/>
+          </Form.Item>
+          <Form.Item label='内容'>
+            <WangEditor onChange={(e) => handleChange(e, 'content')} description={currentRow?.content} />
+          </Form.Item>
         </ProForm>
       </Modal>
       <UpdateForm
@@ -314,6 +350,7 @@ const TableList: React.FC = () => {
           />
         )}
       </Drawer>
+
     </PageContainer>
   );
 };

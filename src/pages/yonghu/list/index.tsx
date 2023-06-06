@@ -18,6 +18,7 @@ const TableList: React.FC = () => {
       title: 'ID',
       dataIndex: 'id',
       tip: '唯一的 key',
+      className: 'fullClass',
       render: (dom, entity) => {
         return (
           <a
@@ -34,6 +35,7 @@ const TableList: React.FC = () => {
     {
       title: '姓名',
       dataIndex: 'name',
+      className: 'fullClass',
     },
     {
       title: '头像',
@@ -47,46 +49,57 @@ const TableList: React.FC = () => {
     {
       title: '是否实名认证',
       dataIndex: 'authenticated',
+      className: 'fullClass',
     },
     {
       title: '手机号',
       dataIndex: 'mobilePhone',
+      className: 'fullClass',
     },
     {
       title: '身份证号',
       dataIndex: 'idCard',
+      className: 'fullClass',
     },
     {
       title: '推荐人ID',
       dataIndex: 'referrerId',
+      className: 'fullClass',
     },
     {
       title: '推荐人手机号',
       dataIndex: 'referrerMobilePhone',
+      className: 'fullClass',
     },
     {
       title: '注册类型',
       dataIndex: 'registerType',
+      className: 'fullClass',
     },
     {
       title: '今天是否签到',
       dataIndex: 'signInStatus',
+      className: 'fullClass',
     },
     {
       title: '邀请码',
       dataIndex: 'inviteCode',
+      className: 'fullClass',
     },
     {
       title: '账号状态',
       dataIndex: 'delFlag',
+      className: 'fullClass',
     },
     {
       title: '注册时间',
       dataIndex: 'createTime',
+      className: 'fullClass',
     },
     {
       title: '更新时间',
       dataIndex: 'updateTime',
+      className: 'fullClass',
     },
   ];
 
@@ -99,6 +112,10 @@ const TableList: React.FC = () => {
         dateFormatter="string"
         pagination={{
           pageSize: 10,
+        }}
+        scroll={{
+          x: 1400,
+          y: document?.body?.clientHeight - 370,
         }}
         request={async (params: TableListPagination) => {
           const res: any = await rule({ pageNum: params.current, pageSize: params.pageSize });

@@ -1,9 +1,10 @@
 export type TableListItem = {
-  id?: string;
-  image: string;
+  id: number;
+  form: string;
+  to: string;
+  createTime: string;
   content: string;
-  title: string;
-  publisher: string;
+  stat: boolean;
 };
 
 export type TableListPagination = {

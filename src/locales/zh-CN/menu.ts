@@ -32,6 +32,8 @@ export default {
   'menu.compose.compose-list': '合成请求',
   'menu.withdraw': '出款管理',
   'menu.withdraw.withdraw-list': '出款申请列表',
+  'menu.online': '在线客服',
+  'menu.online.online-list': '消息列表',
   'menu.yonghu': '用户管理',
   'menu.yonghu.yonghu-list': '用户列表',
   'menu.progress': 'Mint管理',

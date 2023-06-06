@@ -40,7 +40,7 @@ export default defineConfig({
     },
     {
       path: '/yonghu',
-      icon: 'user',
+      icon: 'User',
       name: 'yonghu',
       routes: [
         {
@@ -136,7 +136,7 @@ export default defineConfig({
     },
     {
       path: '/withdraw',
-      icon: 'send',
+      icon: 'Transaction',
       name: 'withdraw',
       routes: [
         {
@@ -147,6 +147,22 @@ export default defineConfig({
           name: 'withdraw-list',
           path: '/withdraw/list',
           component: './withdraw/list',
+        },
+      ],
+    },
+    {
+      path: '/online',
+      icon: 'Aliwangwang',
+      name: 'online',
+      routes: [
+        {
+          path: '/online',
+          redirect: '/online/list',
+        },
+        {
+          name: 'online-list',
+          path: '/online/list',
+          component: './online/list',
         },
       ],
     },
@@ -181,7 +197,7 @@ export default defineConfig({
     // },
     {
       path: '/accounts',
-      icon: 'UserAdd',
+      icon: 'Setting',
       name: 'account',
       routes: [
         {

@@ -4,7 +4,7 @@ import type { RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import { currentUser as queryCurrentUser } from './services/login/api';
-
+import './global.less'
 const loginPath = '/user/login';
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
