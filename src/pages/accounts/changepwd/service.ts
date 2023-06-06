@@ -7,12 +7,11 @@ export interface StateType {
 
 export interface UserRegisterParams {
   password: string;
-  new_password: string;
-  confirm_password: string;
+  accountName: string;
 }
 
 export async function fakeChangePwd(params: UserRegisterParams) {
-  return request('/sys_user', {
+  return request('/admin/administer/update', {
     method: 'PUT',
     data: params,
   });

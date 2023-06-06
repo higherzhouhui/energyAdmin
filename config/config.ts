@@ -36,7 +36,23 @@ export default defineConfig({
   routes: [
     {
       path: '/',
-      redirect: '/wings/noticelist',
+      redirect: '/yonghu/list',
+    },
+    {
+      path: '/yonghu',
+      icon: 'user',
+      name: 'yonghu',
+      routes: [
+        {
+          path: '/yonghu',
+          redirect: '/yonghu/list',
+        },
+        {
+          name: 'yonghu-list',
+          path: '/yonghu/list',
+          component: './yonghu/list',
+        },
+      ],
     },
     {
       path: '/user',
@@ -71,7 +87,7 @@ export default defineConfig({
     },
     {
       path: '/wings',
-      icon: 'table',
+      icon: 'BarChartOutlined',
       name: 'wings',
       routes: [
         {

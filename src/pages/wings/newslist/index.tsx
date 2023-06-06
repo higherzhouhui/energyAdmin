@@ -10,8 +10,7 @@ import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
 import type { TableListItem, TableListPagination } from './data';
 import { addRule, removeRule, rule, updateRule } from './service';
-import styles from './style.less';
-import ProForm, { ProFormText, ProFormUploadButton } from '@ant-design/pro-form';
+import ProForm, { ProFormUploadButton } from '@ant-design/pro-form';
 import { request } from 'umi';
 /**
  * 更新节点
@@ -81,6 +80,13 @@ const TableList: React.FC = () => {
     setUrl(e.target.value);
   };
   const formRef = useRef<any>()
+  const handleUpdateRecord = (record: TableListItem) => {
+    setCurrentRow(record);
+    setImage(record.image)
+    setUrl(record.url)
+    handleModalVisible(true);
+    formRef?.current?.resetFields();
+  }
   const columns: ProColumns<TableListItem>[] = [
     {
       title: 'ID',
@@ -137,13 +143,6 @@ const TableList: React.FC = () => {
     handleModalVisible(true);
     formRef?.current?.resetFields();
   };
-  const handleUpdateRecord = (record: TableListItem) => {
-    setCurrentRow(record);
-    setImage(record.image)
-    setUrl(record.url)
-    handleModalVisible(true);
-    formRef?.current?.resetFields();
-  }
   const handleOk = async () => {
     const hide = message.loading(`正在${currentRow?.id ? '更新' : '新增'}`);
     try {
@@ -270,12 +269,6 @@ const TableList: React.FC = () => {
               ...Upload,
             }}
           />
-          <Form.Item label="">
-            <Input value={image} readOnly />
-          </Form.Item>
-          <Form.Item label="跳转地址">
-            <Input value={url} onChange={onChangeUrl} />
-          </Form.Item>
         </ProForm>
       </Modal>
       <UpdateForm

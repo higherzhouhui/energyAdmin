@@ -19,7 +19,7 @@ export async function rule(
     /** 列表的内容总数 */
     total?: number;
     success?: boolean;
-  }>('/admin/administer/getPageList', {
+  }>('/admin/user/getPageList', {
     method: 'GET',
     params: {
       ...params,
@@ -30,7 +30,7 @@ export async function rule(
 
 /** 新建规则 PUT /api/rule */
 export async function updateRule(data: { [key: string]: any }, options?: { [key: string]: any }) {
-  return request<any>(`/admin/administer/${data.id}/${data.disable}`, {
+  return request<TableListItem>('/api/rule', {
     data,
     method: 'PUT',
     ...(options || {}),
@@ -39,24 +39,16 @@ export async function updateRule(data: { [key: string]: any }, options?: { [key:
 
 /** 新建规则 POST /api/rule */
 export async function addRule(data: { [key: string]: any }, options?: { [key: string]: any }) {
-  return request<TableListItem>('/api/rule', {
+  return request<Record<string, any>>('/admin/withdraw/withdrawAudit', {
     data,
     method: 'POST',
     ...(options || {}),
   });
 }
-/** 新建规则 POST /api/rule */
-export async function administerUpdate(data: { [key: string]: any }, options?: { [key: string]: any }) {
-  return request<any>('/admin/administer/update', {
-    data,
-    method: 'PUT',
-    ...(options || {}),
-  });
-}
 
 /** 删除规则 DELETE /api/rule */
-export async function removeRule(data: { id: string }, options?: { [key: string]: any }) {
-  return request<Record<string, any>>(`/admin/administer/${data.id}`, {
+export async function removeRule(data: { id: number }, options?: { [key: string]: any }) {
+  return request<Record<string, any>>(`/admin/expand/delete/${data.id}`, {
     data,
     method: 'DELETE',
     ...(options || {}),

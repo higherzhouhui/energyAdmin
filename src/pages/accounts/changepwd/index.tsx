@@ -64,9 +64,9 @@ const ChangePwd: FC = () => {
 
   const onFinish = (values: any) => {
     const param = {
-      password: md5(values.password),
-      new_password: md5(values.new_password),
-      confirm_password: md5(values.confirm_password),
+      accountName: values.accountName,
+      password: values.password,
+      id: localStorage.getItem('x-user-id')
     };
     const hide = message.loading('正在修改...', 50);
     setsubmitting(true);
@@ -74,11 +74,11 @@ const ChangePwd: FC = () => {
       .then((res: any) => {
         hide();
         setsubmitting(false);
-        if (res.errno === 200) {
+        if (res.code === 200) {
           history.push({
             pathname: '/accounts/changepwd-result',
             state: {
-              username: 'admin',
+              username: values.accountName,
             },
           });
         }
@@ -87,14 +87,6 @@ const ChangePwd: FC = () => {
         hide();
         setsubmitting(false);
       });
-  };
-
-  const checkConfirm = (_: any, value: string) => {
-    const promise = Promise;
-    if (value && value !== form.getFieldValue('new_password')) {
-      return promise.reject('两次输入的密码不匹配!');
-    }
-    return promise.resolve();
   };
 
   const checkPassword = (_: any, value: string) => {
@@ -139,20 +131,15 @@ const ChangePwd: FC = () => {
         <div className={styles.main}>
           <Form form={form} name="UserRegister" onFinish={onFinish}>
             <FormItem
-              name="password"
-              label="原密码"
-              className={
-                form.getFieldValue('password') &&
-                form.getFieldValue('password').length > 0 &&
-                styles.password
-              }
+              name="accountName"
+              label="新账号"
               rules={[
                 {
                   required: true,
                 },
               ]}
             >
-              <Input size="large" type="password" placeholder="请输入原来的密码" />
+              <Input size="large" type="text" placeholder="请输入账号" />
             </FormItem>
             <Popover
               getPopupContainer={(node) => {
@@ -196,20 +183,6 @@ const ChangePwd: FC = () => {
                 <Input size="large" type="password" placeholder="至少6位密码,区分大小写" />
               </FormItem>
             </Popover>
-            <FormItem
-              name="confirm_password"
-              label="请确认"
-              rules={[
-                {
-                  required: true,
-                },
-                {
-                  validator: checkConfirm,
-                },
-              ]}
-            >
-              <Input size="large" type="password" placeholder="确认密码" />
-            </FormItem>
             <FormItem>
               <Button
                 loading={submitting}

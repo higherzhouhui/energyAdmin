@@ -1,10 +1,9 @@
-import { Button, Card, Form, Input, message, Popover, Progress, Select } from 'antd';
+import { Button, Card, Form, Input, message, Popover, Progress } from 'antd';
 import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 import { fakeChangePwd } from './service';
 
 import { PageContainer } from '@ant-design/pro-layout';
-import md5 from 'js-md5';
 import { history } from 'umi';
 import styles from './style.less';
 const FormItem = Form.Item;
@@ -65,11 +64,9 @@ const AddAccount: FC = () => {
   const onFinish = (values: any) => {
     console.log(values);
     const param = {
-      password: md5(values.password),
-      confirm_password: md5(values.confirm_password),
-      nick_name: values.nick_name,
-      status: values.status * 1,
-      user_name: values.user_name,
+      password: values.password,
+      accountName: values.accountName,
+      comments: values.comments
     };
     const hide = message.loading('正在创建新用户...', 50);
     setsubmitting(true);
@@ -77,11 +74,11 @@ const AddAccount: FC = () => {
       .then((res: any) => {
         hide();
         setsubmitting(false);
-        if (res.errno === 200) {
+        if (res.code === 200) {
           history.push({
             pathname: '/accounts/addaccount-result',
             state: {
-              username: param.user_name,
+              username: param.accountName,
             },
           });
         }
@@ -145,10 +142,10 @@ const AddAccount: FC = () => {
               账号<i>*</i>
             </p>
             <FormItem
-              name="user_name"
+              name="accountName"
               className={
-                form.getFieldValue('user_name') &&
-                form.getFieldValue('user_name').length > 0 &&
+                form.getFieldValue('accountName') &&
+                form.getFieldValue('accountName').length > 0 &&
                 styles.password
               }
               rules={[
@@ -159,42 +156,6 @@ const AddAccount: FC = () => {
               ]}
             >
               <Input type="text" placeholder="请输入账号" />
-            </FormItem>
-            <p>
-              用户名<i>*</i>
-            </p>
-            <FormItem
-              name="nick_name"
-              className={
-                form.getFieldValue('nick_name') &&
-                form.getFieldValue('nick_name').length > 0 &&
-                styles.password
-              }
-              rules={[
-                {
-                  required: true,
-                  message: '请输入用户名',
-                },
-              ]}
-            >
-              <Input type="text" placeholder="请输入名称" />
-            </FormItem>
-            <p>
-              状态<i>*</i>
-            </p>
-            <FormItem
-              name="status"
-              rules={[
-                {
-                  required: true,
-                  message: '请选择状态',
-                },
-              ]}
-            >
-              <Select placeholder="启用">
-                <Select.Option value="0">启用</Select.Option>
-                <Select.Option value="1">禁用</Select.Option>
-              </Select>
             </FormItem>
             <Popover
               getPopupContainer={(node) => {
@@ -262,6 +223,25 @@ const AddAccount: FC = () => {
               ]}
             >
               <Input type="password" placeholder="确认密码" />
+            </FormItem>
+            <p>
+              备注
+            </p>
+            <FormItem
+              name="comments"
+              className={
+                form.getFieldValue('comments') &&
+                form.getFieldValue('comments').length > 0 &&
+                styles.password
+              }
+              rules={[
+                {
+                  required: true,
+                  message: '请输入备注',
+                },
+              ]}
+            >
+              <Input type="text" placeholder="请输入备注" />
             </FormItem>
             <FormItem>
               <Button

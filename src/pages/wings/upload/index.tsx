@@ -48,7 +48,7 @@ const UploadWings: FC<Record<string, any>> = () => {
     sendRequest(formData);
   };
   return (
-    <PageContainer content="该页面用于上传文件，然后将地址复制到需要的地方">
+    <PageContainer content="该页面用于上传文件，然后将地址复制到需要的地方(操作不便可打开两个窗口)">
       <Card bordered={false}>
         {
           imageUrl ? <div>

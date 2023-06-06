@@ -6,16 +6,13 @@ export interface StateType {
 }
 
 export interface UserRegisterData {
-  user_name: string;
+  accountName: string;
   password: string;
-  confirm_password: string;
-  nick_name: string;
-  status: number;
+  comments?: string;
 }
 
 export async function fakeChangePwd(params: UserRegisterData) {
-  console.log(params);
-  return request('/sys_user', {
+  return request('/admin/administer/create', {
     method: 'POST',
     data: params,
   });

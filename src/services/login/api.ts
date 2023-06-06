@@ -27,7 +27,7 @@ request.interceptors.response.use(async (response, options) => {
   // let result;
   const data = await response.clone().json();
   if (data.code !== 200) {
-    message.error(data.message);
+    message.error(data.message || data.msg);
   }
   return {
     ...data,

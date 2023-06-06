@@ -2,11 +2,11 @@ import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Form, Input, message, Modal, Select } from 'antd';
+import { Button, Form, Input, message, Modal, Select, Switch } from 'antd';
 import React, { useRef, useState } from 'react';
 import { Link } from 'umi';
 import type { TableListItem, TableListPagination } from './data';
-import { rule, updateRule } from './service';
+import { rule, updateRule, removeRule, administerUpdate } from './service';
 
 /**
  * 更新节点
@@ -17,12 +17,11 @@ import { rule, updateRule } from './service';
 const handleUpdate = async (fields: any, currentRow?: TableListItem) => {
   const hide = message.loading('正在修改...', 50);
   try {
-    await updateRule({
+    await administerUpdate({
       ...currentRow,
       ...fields,
     });
     hide();
-    message.success('修改成功!');
     return true;
   } catch (error) {
     hide();
@@ -43,6 +42,34 @@ const AccountList: React.FC = () => {
   const [currentRow, setCurrentRow] = useState<TableListItem>();
   const FormItem = Form.Item;
   const formRef = useRef<any>();
+  const onchangeSwitch = async (e: any, id: string) => {
+    const hide = message.loading('操作中...', 50);
+    const res = await updateRule({
+      id: id,
+      disable: e
+    })
+    hide()
+    if (res.code === 200) {
+        message.success('操作成功!');
+        actionRef?.current?.reload();
+    }
+  }
+  const handleRemove = async (id: string) => {
+    const hide = message.loading('正在删除...', 50);
+    try {
+      const res = await removeRule({id: id});
+      hide();
+      if (res.code === 200) {
+        message.success('修改成功!');
+        actionRef?.current?.reload();
+      }
+      return true;
+    } catch (error) {
+      hide();
+      message.error('修改失败请重试！');
+      return false;
+    }
+  }
   const columns: ProColumns<TableListItem>[] = [
     {
       title: 'ID',
@@ -51,40 +78,33 @@ const AccountList: React.FC = () => {
       hideInSearch: true,
     },
     {
-      title: '用户名',
-      dataIndex: 'nick_name',
-    },
-    {
-      title: '头像',
-      dataIndex: 'path',
-      hideInSearch: true,
-      hideInTable: true,
-      // render: (_, record) => {
-      //   return <Image src={record.path} width={120} height={120} style={{objectFit: 'contain'}}/>;
-      // },
-    },
-    {
       title: '账号',
-      dataIndex: 'user_name',
+      dataIndex: 'accountName',
+    },
+    {
+      title: '状态',
+      dataIndex: 'disable',
+      render: (_, record) => {
+        return (
+          <Switch checked={record.disable} onChange={(e) => {onchangeSwitch(e, record.id)}} />
+        );
+      },
     },
     {
       title: '类型',
-      dataIndex: 'status',
-      sorter: (a, b) => a.status - b.status,
-      valueEnum: {
-        0: {
-          text: '启用',
-          status: 'Success',
-        },
-        1: {
-          text: '禁用',
-          status: 'Default',
-        },
-        2: {
-          text: '禁用',
-          status: 'Default',
-        },
-      },
+      dataIndex: 'type',
+    },
+    {
+      title: '备注',
+      dataIndex: 'comments',
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'createTime',
+    },
+    {
+      title: '更新时间',
+      dataIndex: 'updateTime',
     },
     {
       title: '操作',
@@ -100,6 +120,14 @@ const AccountList: React.FC = () => {
           }}
         >
           修改
+        </a>,
+        <a
+          key="delete"
+          onClick={() => {
+            handleRemove(record.id)
+          }}
+        >
+          删除
         </a>,
       ],
     },
@@ -121,7 +149,7 @@ const AccountList: React.FC = () => {
               }}
               style={{ color: '#fff' }}
             >
-              新增用户
+              新增管理员
             </Link>
           </Button>,
         ]}
@@ -130,11 +158,28 @@ const AccountList: React.FC = () => {
         }}
         request={async (params: TableListPagination) => {
           const res: any = await rule({ pageNum: params.current, pageSize: params.pageSize });
+          (res?.data?.list || []).map((item:any) => {
+            let disable = '启用'
+            if (item.disable) {
+              disable = '禁用'
+            }
+            let type = '普通管理员'
+            if (item.type == 1) {
+              type = '超级管理员'
+            }
+            let delFlag = '否'
+            if (item.delFlag == 1) {
+              delFlag = '是'
+            }
+            item.delFlag = delFlag
+            item.type = type
+            item.disable = disable
+          })
           return {
-            data: res?.data?.rows || [],
-            page: res?.data?.page?.pageNum,
+            data: res?.data?.list || [],
+            page: res?.data?.pageNum,
             success: true,
-            total: res?.data?.page?.total,
+            total: res?.data?.totalSize,
           };
         }}
         columns={columns}
@@ -152,11 +197,12 @@ const AccountList: React.FC = () => {
         }}
         onOk={async () => {
           if (formRef && formRef.current) {
-            const user_name = formRef?.current?.getFieldValue('user_name');
-            const nick_name = formRef?.current?.getFieldValue('nick_name');
-            const status = formRef?.current?.getFieldValue('status') * 1;
-            const value = { user_name, nick_name, status };
+            const accountName = formRef?.current?.getFieldValue('accountName');
+            const password = formRef?.current?.getFieldValue('password');
+            const comment = formRef?.current?.getFieldValue('comment');
+            const value = { accountName, password, comment };
             const success = await handleUpdate(value, currentRow);
+
             if (success) {
               handleUpdateModalVisible(false);
               setCurrentRow(undefined);
@@ -171,10 +217,10 @@ const AccountList: React.FC = () => {
         <Form
           ref={formRef}
           name="updateuserinfo"
-          initialValues={{ ...currentRow, ...{ status: currentRow?.status.toString() } }}
+          initialValues={{ ...currentRow  }}
         >
           <FormItem
-            name="user_name"
+            name="accountName"
             label="账号"
             labelCol={{ span: 4 }}
             rules={[
@@ -186,8 +232,8 @@ const AccountList: React.FC = () => {
             <Input type="text" placeholder="请输入账号" />
           </FormItem>
           <FormItem
-            name="nick_name"
-            label="用户名"
+            name="password"
+            label="密码"
             labelCol={{ span: 4 }}
             rules={[
               {
@@ -195,22 +241,14 @@ const AccountList: React.FC = () => {
               },
             ]}
           >
-            <Input type="text" placeholder="请输入名称" />
+            <Input type="password" placeholder="请输密码" />
           </FormItem>
           <FormItem
-            name="status"
-            label="状态"
+            name="comments"
+            label="备注"
             labelCol={{ span: 4 }}
-            rules={[
-              {
-                required: true,
-              },
-            ]}
           >
-            <Select placeholder="启用">
-              <Select.Option value="0">启用</Select.Option>
-              <Select.Option value="1">禁用</Select.Option>
-            </Select>
+            <Input type="text" placeholder="请输入备注" />
           </FormItem>
         </Form>
       </Modal>
