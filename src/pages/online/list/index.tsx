@@ -135,6 +135,7 @@ const TableList: React.FC = () => {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
+      className: 'fullClass',
       hideInDescriptions: true,
       render: (_, record) => [
         <Badge dot={!record.stat} key="update">

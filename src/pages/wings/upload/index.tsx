@@ -28,19 +28,19 @@ const UploadWings: FC<Record<string, any>> = () => {
   const onFinish = async (values: Record<string, any>) => {
     const { files } = values;
     if (!files || files.length === 0) {
-      message.warn('请选择图片文件');
+      message.warn('请选择文件');
       return;
     }
-    let typeError = false;
-    files.forEach((item: any) => {
-      if (!item.type.includes('image')) {
-        typeError = true;
-      }
-    });
-    if (typeError) {
-      message.error('文件格式错误，请重新上传');
-      return;
-    }
+    // let typeError = false;
+    // files.forEach((item: any) => {
+    //   if (!item.type.includes('image')) {
+    //     typeError = true;
+    //   }
+    // });
+    // if (typeError) {
+    //   message.error('文件格式错误，请重新上传');
+    //   return;
+    // }
     const formData = new FormData();
     files.forEach((file: any) => {
       formData.append('file', file.originFileObj);

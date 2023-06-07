@@ -28,6 +28,11 @@ request.interceptors.response.use(async (response, options) => {
   const data = await response.clone().json();
   if (data.code !== 200) {
     message.error(data.message || data.msg);
+    if (data.code === 401) {
+      location.href = '/user/login'
+      localStorage.removeItem('Access-Token');
+      localStorage.removeItem('x-user-id');
+    }
   }
   return {
     ...data,
