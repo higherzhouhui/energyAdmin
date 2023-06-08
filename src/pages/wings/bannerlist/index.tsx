@@ -92,6 +92,8 @@ const TableList: React.FC = () => {
       title: 'ID',
       dataIndex: 'id',
       tip: '唯一的 key',
+      hideInTable: true,
+
     },
     {
       title: '图片',
@@ -271,10 +273,10 @@ const TableList: React.FC = () => {
             }}
           />
           <Form.Item label="">
-            <Input value={image} readOnly />
+            <Input value={image} readOnly placeholder='请上传图片'/>
           </Form.Item>
-          <Form.Item label="跳转地址">
-            <Input value={url} onChange={onChangeUrl} />
+          <Form.Item label="跳转地址(选填)">
+            <Input value={url} onChange={onChangeUrl} placeholder='请输入点击后跳转地址'/>
           </Form.Item>
         </ProForm>
       </Modal>

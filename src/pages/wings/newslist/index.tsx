@@ -86,6 +86,7 @@ const TableList: React.FC = () => {
       title: 'ID',
       dataIndex: 'id',
       tip: '唯一的 key',
+      hideInTable: true,
     },
     {
       title: '标题',
@@ -293,17 +294,17 @@ const TableList: React.FC = () => {
           />
           {
             currentRow.image ? <Form.Item label=''>
-            <Input value={currentRow.image} readOnly/>
+            <Input value={currentRow.image} readOnly placeholder='请选择封面'/>
           </Form.Item> : null
           }
           <Form.Item label='标题'>
-            <Input value={currentRow?.title} onChange={(e) => handleChange(e.target.value, 'title')}/>
+            <Input value={currentRow?.title} onChange={(e) => handleChange(e.target.value, 'title')} placeholder='请输入标题'/>
           </Form.Item>
           <Form.Item label='来源'>
-          <Input value={currentRow?.publisher} onChange={(e) => handleChange(e.target.value, 'publisher')}/>
+          <Input value={currentRow?.publisher} onChange={(e) => handleChange(e.target.value, 'publisher')} placeholder='请输入来源'/>
           </Form.Item>
           <Form.Item label='内容'>
-            <WangEditor onChange={(e) => handleChange(e, 'content')} description={currentRow?.content} />
+            <WangEditor onChange={(e) => handleChange(e, 'content')} description={currentRow?.content}/>
           </Form.Item>
         </ProForm>
       </Modal>

@@ -58,6 +58,7 @@ const TableList: React.FC = () => {
       title: 'ID',
       dataIndex: 'id',
       tip: '唯一的 key',
+      hideInTable: true,
     },
     {
       title: '标题',
@@ -265,20 +266,20 @@ const TableList: React.FC = () => {
           />
           {
             currentRow?.image ? <Form.Item label="">
-            <Input value={currentRow?.image} readOnly />
+            <Input value={currentRow?.image} placeholder='请选择图片' />
           </Form.Item> : null
           }
           <Form.Item label="价格">
-            <Input type='number' value={currentRow?.price} onChange={(e) => handleChange(e.target.value, 'price')}/>
+            <Input type='number' value={currentRow?.price} onChange={(e) => handleChange(e.target.value, 'price')} placeholder='请输入价格'/>
           </Form.Item>
           <Form.Item label="正泰补贴">
-            <Input type='number' value={currentRow?.chntSubsidy} onChange={(e) => handleChange(e.target.value, 'chntSubsidy')}/>
+            <Input type='number' value={currentRow?.chntSubsidy} onChange={(e) => handleChange(e.target.value, 'chntSubsidy')} placeholder='请输正泰补贴'/>
           </Form.Item>
           <Form.Item label="每日收益">
-            <Input type='number' value={currentRow?.dayEarnings} onChange={(e) => handleChange(e.target.value, 'dayEarnings')}/>
+            <Input type='number' value={currentRow?.dayEarnings} onChange={(e) => handleChange(e.target.value, 'dayEarnings')} placeholder='请输入每日收益'/>
           </Form.Item>
           <Form.Item label="周期">
-            <Input type='number' value={currentRow?.period} onChange={(e) => handleChange(e.target.value, 'period')} addonAfter="天"/>
+            <Input type='number' value={currentRow?.period} onChange={(e) => handleChange(e.target.value, 'period')} addonAfter="天" placeholder='请输入周期'/>
           </Form.Item>
         </ProForm>
       </Modal>

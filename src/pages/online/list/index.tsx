@@ -74,15 +74,14 @@ const TableList: React.FC = () => {
   const [currentRow, setCurrentRow] = useState<TableListItem>();
   const [selectedRowsState, setSelectedRows] = useState<TableListItem[]>([]);
   const [content, setContent] = useState('');
-  const [historyContent, sethistoryContent] = useState('');
+  const [sendContent, setSendContent] = useState('');
   const formRef = useRef<any>();
   const handleUpdateRecord = (record: TableListItem) => {
     setCurrentRow(record);
     handleModalVisible(true);
     formRef?.current?.resetFields();
-    getDetailRule({ form: record.form }).then((res) => {
-      sethistoryContent('');
-    });
+    setContent(record.content)
+    setSendContent('')
   };
   const columns: ProColumns<any>[] = [
     {
@@ -115,11 +114,13 @@ const TableList: React.FC = () => {
       title: '接收人Id',
       dataIndex: 'to',
       className: 'fullClass',
+      hideInTable: true,
     },
     {
       title: '接收人头像',
       dataIndex: 'toPhoto',
       className: 'fullClass',
+      hideInTable: true,
       render: (_, record) => {
         return (
           <Image src={record.toPhoto} width={120} height={120} style={{ objectFit: 'contain' }} />
@@ -190,12 +191,6 @@ const TableList: React.FC = () => {
         pagination={{
           pageSize: 10,
         }}
-        toolBarRender={() => [
-          <Button type="primary" key="primary" onClick={() => addNewNotice()}>
-            <PlusOutlined />
-            新增
-          </Button>,
-        ]}
         request={async (params: TableListPagination) => {
           const res: any = await rule({ pageNum: params.current, pageSize: params.pageSize });
           return {
@@ -253,11 +248,11 @@ const TableList: React.FC = () => {
         onCancel={() => handleModalVisible(false)}
       >
         <ProForm formRef={formRef} submitter={false}>
-          <Form.Item label="历史记录">
-            <Input.TextArea value={historyContent} />
+          <Form.Item label="对方发送消息">
+            <Input.TextArea value={content} />
           </Form.Item>
-          <Form.Item>
-            <Input.TextArea value={content} onChange={(e) => setContent(e.target.value)} />
+          <Form.Item label="回复消息">
+            <Input.TextArea placeholder='请输入回复内容' value={sendContent} onChange={(e) => setSendContent(e.target.value)} />
           </Form.Item>
         </ProForm>
       </Modal>

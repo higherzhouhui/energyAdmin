@@ -125,6 +125,11 @@ export default defineConfig({
           component: './wings/baseinfo',
         },
         {
+          name: 'wings-version',
+          path: '/wings/version',
+          component: './wings/version',
+        },
+        {
           name: 'wings-upload',
           path: '/wings/upload',
           component: './wings/upload',

@@ -80,6 +80,7 @@ const TableList: React.FC = () => {
       dataIndex: 'id',
       tip: '唯一的 key',
       className: 'fullClass',
+      hideInTable: true,
     },
     {
       title: '内容',

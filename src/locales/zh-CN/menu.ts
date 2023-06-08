@@ -28,6 +28,7 @@ export default {
   'menu.wings.wings-projectlist': '项目列表',
   'menu.wings.wings-upload': '上传文件',
   'menu.wings.wings-baseinfo': '基础配置',
+  'menu.wings.wings-version': '版本控制',
   'menu.compose': '合成翅膀',
   'menu.compose.compose-list': '合成请求',
   'menu.withdraw': '出款管理',

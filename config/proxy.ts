@@ -9,26 +9,21 @@
 export default {
   dev: {
     '/admin/': {
-      target: 'http://20.89.128.195:8080',
-      changeOrigin: true,
-      pathRewrite: { '^': '' },
-    },
-    '/energy/': {
-      target: 'http://20.89.128.195:8080',
+      target: 'http://www.zhengtaixinnengyuan.com',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
   },
   test: {
     '/admin/': {
-      target: 'http://20.89.128.195:8080',
+      target: 'http://www.zhengtaixinnengyuan.com',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
   },
   pre: {
     '/admin/': {
-      target: 'http://20.205.107.229:8080',
+      target: 'http://www.zhengtaixinnengyuan.com',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },

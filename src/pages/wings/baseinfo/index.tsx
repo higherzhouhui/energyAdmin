@@ -21,7 +21,7 @@ const TableList: React.FC = () => {
     {title: '团队第三层奖励', key: 'groupThree', vlaue: ''},
     {title: 'id', key: 'id', hide: true, value: ''},
   ])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   useEffect(() => {
     setLoading(true)
     rule().then(res => {
@@ -76,7 +76,11 @@ const TableList: React.FC = () => {
           baseInfo.map(item => {
             return !item.hide ? <div className={styles.formItem} key={item.key}>
             <div className={styles.label}>{item.title}</div>
-              <Input value={item.value} onChange={(e) => handleChange(e.target.value, item.key)} placeholder={`请输入${item.title}`}/>
+             {
+              item.key === 'expandRule' ? <Input.TextArea rows={3} value={item.value} onChange={(e) => handleChange(e.target.value, item.key)} placeholder={`请输入${item.title}`}/>
+              : <Input value={item.value} onChange={(e) => handleChange(e.target.value, item.key)} placeholder={`请输入${item.title}`}/>
+             }
+              
           </div> : null
           })
         }

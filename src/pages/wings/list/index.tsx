@@ -83,6 +83,7 @@ const TableList: React.FC = () => {
       title: 'ID',
       dataIndex: 'id',
       tip: '唯一的 key',
+      hideInTable: true,
     },
     {
       title: '图标',
@@ -275,10 +276,10 @@ const TableList: React.FC = () => {
           </Form.Item> : null
           }
           <Form.Item label="邀请人数">
-            <Input type='number' value={currentRow?.inviteNum} onChange={(e) => handleChange(e.target.value, 'inviteNum')}/>
+            <Input type='number' value={currentRow?.inviteNum} onChange={(e) => handleChange(e.target.value, 'inviteNum')} placeholder='请输入邀请人数'/>
           </Form.Item>
-          <Form.Item label="奖励">
-            <Input type='number' value={currentRow?.amount} onChange={(e) => handleChange(e.target.value, 'amount')}/>
+          <Form.Item label="奖励（元）">
+            <Input type='number' value={currentRow?.amount} onChange={(e) => handleChange(e.target.value, 'amount')} placeholder='请输入奖励'/>
           </Form.Item>
         </ProForm>
       </Modal>

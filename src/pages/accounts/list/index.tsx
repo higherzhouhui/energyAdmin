@@ -75,7 +75,7 @@ const AccountList: React.FC = () => {
       title: 'ID',
       dataIndex: 'id',
       tip: '唯一的 key',
-      hideInSearch: true,
+      hideInTable: true,
     },
     {
       title: '账号',
