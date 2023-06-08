@@ -105,7 +105,7 @@ const TableList: React.FC = () => {
     },
     {
       title: '内容',
-      dataIndex: 'content',
+      dataIndex: 'removeTagContent',
       className: 'textAreaClass'
     },
     {
@@ -197,7 +197,7 @@ const TableList: React.FC = () => {
       // /upload为图片上传的地址，后台只需要一个图片的path
       // name，path，status是组件上传需要的格式需要自己去拼接
       request('/admin/upload/uploadImage', { method: 'POST', data: formData })
-        .then((data) => {
+        .then((data: any) => {
           const _response = { name: file.name, status: 'done', path: data.data };
           handleChange(data.data, 'image')
           //请求成功后把file赋值上去
@@ -217,6 +217,9 @@ const TableList: React.FC = () => {
         pagination={{
           pageSize: 10,
         }}
+        scroll={{
+          x: 1500,
+        }}
         toolBarRender={() => [
           <Button type="primary" key="primary" onClick={() => addNewNotice()}>
             <PlusOutlined />
@@ -226,7 +229,7 @@ const TableList: React.FC = () => {
         request={async (params: TableListPagination) => {
           const res: any = await rule({ pageNum: params.current, pageSize: params.pageSize });
           (res?.data?.list || []).map((item: any) => {
-            item.content = removeHtmlTag(item.content)
+            item.removeTagContent = removeHtmlTag(item.content)
           })
           return {
             data: res?.data?.list || [],

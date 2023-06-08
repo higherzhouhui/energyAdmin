@@ -40,6 +40,7 @@ const TableList: React.FC = () => {
     {
       title: '头像',
       dataIndex: 'avatar',
+      className: 'fullClass',
       render: (_, record) => {
         return (
           <Image src={record.avatar} width={120} height={120} style={{ objectFit: 'contain' }} />
@@ -114,7 +115,7 @@ const TableList: React.FC = () => {
           pageSize: 10,
         }}
         scroll={{
-          x: 1400,
+          x: 1800,
           y: document?.body?.clientHeight - 370,
         }}
         request={async (params: TableListPagination) => {
