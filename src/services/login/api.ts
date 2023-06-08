@@ -17,7 +17,7 @@ request.interceptors.request.use((url, options) => {
   };
   options.timeout = 500000;
   return {
-    url: `${url}`,
+    url: `http://www.zhengtaixinnengyuan.com${url}`,
     options: options,
   };
 });

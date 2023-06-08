@@ -161,7 +161,7 @@ const TableList: React.FC = () => {
     const hide = message.loading('正在回复');
     try {
       const res = await replayRule({
-        content: content,
+        content: sendContent,
         to: currentRow?.form,
         type: 1,
       });

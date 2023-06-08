@@ -8,21 +8,21 @@
  */
 export default {
   dev: {
-    '/admin/': {
+    '/admin1/': {
       target: 'http://www.zhengtaixinnengyuan.com',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
   },
   test: {
-    '/admin/': {
+    '/admin1/': {
       target: 'http://www.zhengtaixinnengyuan.com',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
   },
   pre: {
-    '/admin/': {
+    '/admin1/': {
       target: 'http://www.zhengtaixinnengyuan.com',
       changeOrigin: true,
       pathRewrite: { '^': '' },
