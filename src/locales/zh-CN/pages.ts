@@ -64,8 +64,8 @@ export default {
   'pages.searchTable.tenThousand': '万',
   'pages.searchTable.batchDeletion': '批量删除',
   'pages.searchTable.batchApproval': '批量审批',
-  'pages.accounts.add.username': '账号',
-  'pages.accounts.add.nice_name': '用户名',
-  'pages.accounts.add.password': '密码',
-  'pages.accounts.add.confirm_password': '密码',
+  'pages.admin.add.username': '账号',
+  'pages.admin.add.nice_name': '用户名',
+  'pages.admin.add.password': '密码',
+  'pages.admin.add.confirm_password': '密码',
 };

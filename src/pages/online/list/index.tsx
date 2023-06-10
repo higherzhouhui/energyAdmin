@@ -1,15 +1,14 @@
-import { PlusOutlined } from '@ant-design/icons';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { Badge, Button, Drawer, Form, Image, Input, message, Modal, Popconfirm } from 'antd';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
 import type { TableListItem, TableListPagination } from './data';
-import { replayRule, removeRule, rule, updateRule, getDetailRule } from './service';
+import { replayRule, removeRule, rule, updateRule } from './service';
 import ProForm from '@ant-design/pro-form';
 /**
  * 更新节点
@@ -83,6 +82,12 @@ const TableList: React.FC = () => {
     setContent(record.content)
     setSendContent('')
   };
+  useEffect(() => {
+    const timer = setInterval(() => {
+      actionRef.current?.reloadAndRest?.();
+    }, 60000)
+    return () => clearInterval(timer)
+  }, [])
   const columns: ProColumns<any>[] = [
     {
       title: 'ID',
