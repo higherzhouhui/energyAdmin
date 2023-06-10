@@ -219,7 +219,7 @@ export default defineConfig({
     {
       path: '/admins',
       icon: 'Setting',
-      name: 'account',
+      name: 'admins',
       routes: [
         {
           path: '/admins',
