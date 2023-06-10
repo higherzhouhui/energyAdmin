@@ -1,5 +1,4 @@
-import { outLogin } from '@/services/login/api';
-import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { LogoutOutlined, SettingOutlined } from '@ant-design/icons';
 import { Avatar, Menu, Spin } from 'antd';
 import { stringify } from 'querystring';
 import type { MenuInfo } from 'rc-menu/lib/interface';
@@ -98,7 +97,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         <Avatar
           size="small"
           className={styles.avatar}
-          src={currentUser.avatar || 'https://joeschmoe.io/api/v1/random'}
+          src={currentUser.avatar || 'http://img.zhengtaixinnengyuan.com/images/2023-06-09/c705b8dff6ad476f98b97c1708b63fb4.png'}
           alt="avatar"
         />
         <span className={`${styles.name} anticon`}>{currentUser.accountName}</span>

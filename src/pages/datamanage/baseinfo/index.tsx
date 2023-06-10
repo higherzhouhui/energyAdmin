@@ -3,6 +3,7 @@ import { Button, Input, message} from 'antd';
 import React, { useEffect, useState } from 'react';
 import { updateRule, rule } from './service';
 import styles from './style.less'
+import WangEditor from '@/components/Editor';
 
 
 const TableList: React.FC = () => {
@@ -13,13 +14,13 @@ const TableList: React.FC = () => {
     {title: '官方群名称', key: 'groupName', vlaue: ''},
     {title: '官方群号', key: 'groupNum', vlaue: ''},
     {title: '官方群二维码', key: 'officialGroup', vlaue: ''},
-    {title: '推广规则', key: 'expandRule', vlaue: ''},
     {title: '团队冻结天数', key: 'groupFreezeDay', vlaue: ''},
     {title: '团队冻结比例', key: 'groupFreezeRatio', vlaue: ''},
     {title: '团队第一层奖励', key: 'groupOne', vlaue: ''},
     {title: '团队第二层奖励', key: 'groupTwo', vlaue: ''},
     {title: '团队第三层奖励', key: 'groupThree', vlaue: ''},
     {title: 'id', key: 'id', hide: true, value: ''},
+    {title: '推广规则', key: 'expandRule', vlaue: '', hide: true},
   ])
   const [loading, setLoading] = useState(false)
   useEffect(() => {
@@ -76,14 +77,14 @@ const TableList: React.FC = () => {
           baseInfo.map(item => {
             return !item.hide ? <div className={styles.formItem} key={item.key}>
             <div className={styles.label}>{item.title}</div>
-             {
-              item.key === 'expandRule' ? <Input.TextArea rows={3} value={item.value} onChange={(e) => handleChange(e.target.value, item.key)} placeholder={`请输入${item.title}`}/>
-              : <Input value={item.value} onChange={(e) => handleChange(e.target.value, item.key)} placeholder={`请输入${item.title}`}/>
-             }
-              
+              <Input value={item.value} onChange={(e) => handleChange(e.target.value, item.key)} placeholder={`请输入${item.title}`}/>
           </div> : null
           })
         }
+      </div>
+      <div className='tuiguang'>
+        <h2>推广规则</h2>
+        <WangEditor description={baseInfo[baseInfo.length - 1].value || ''} onChange={(e) => handleChange(e, baseInfo[baseInfo.length - 1].key || '')}/>
       </div>
       <div className={styles.submit}>
         <Button type='primary' size='large' loading={loading} onClick={() => handleOk()}>确定</Button>

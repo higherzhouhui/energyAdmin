@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import type { Request, Response } from 'express';
 import { parse } from 'url';
 import type { TableListItem, TableListParams } from './data.d';
@@ -10,6 +9,8 @@ const genList = (current: number, pageSize: number) => {
   for (let i = 0; i < pageSize; i += 1) {
     const index = (current - 1) * 10 + i;
     tableListDataSource.push({
+      token_ID: index + '',
+      img: 'https://gw.alipayobjects.com/zos/rmsportal/eeHMaZBwmTvLdIwMfBpg.png',
       key: index,
       disabled: i % 6 === 0,
       href: 'https://ant.design',
@@ -17,13 +18,13 @@ const genList = (current: number, pageSize: number) => {
         'https://gw.alipayobjects.com/zos/rmsportal/eeHMaZBwmTvLdIwMfBpg.png',
         'https://gw.alipayobjects.com/zos/rmsportal/udxAbMEhpwthVVcjLXik.png',
       ][i % 2],
-      name: `TradeCode ${index}`,
+      name: `# ${index}`,
       owner: '曲丽丽',
       desc: '这是一段描述',
       callNo: Math.floor(Math.random() * 1000),
-      status: (Math.floor(Math.random() * 10) % 4).toString(),
+      status: (Math.floor(Math.random() * 10) % 2).toString(),
       updatedAt: new Date(),
-      createdAt: new Date(),
+      createdAt: new Date(1654770724157 - index * Math.random() * 100000000),
       progress: Math.ceil(Math.random() * 100),
     });
   }
@@ -136,6 +137,8 @@ function postRule(req: Request, res: Response, u: string, b: Request) {
           updatedAt: new Date(),
           createdAt: new Date(),
           progress: Math.ceil(Math.random() * 100),
+          token_ID: '',
+          img: 'https://gw.alipayobjects.com/zos/rmsportal/eeHMaZBwmTvLdIwMfBpg.png',
         };
         tableListDataSource.unshift(newRule);
         return res.json(newRule);
