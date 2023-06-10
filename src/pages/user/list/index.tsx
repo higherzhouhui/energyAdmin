@@ -1,3 +1,5 @@
+import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
+import ProDescriptions from '@ant-design/pro-descriptions';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -5,7 +7,6 @@ import { Drawer, Image } from 'antd';
 import React, { useRef, useState } from 'react';
 import type { TableListItem, TableListPagination } from './data';
 import { rule } from './service';
-import ProDescriptions, { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 
 
 const TableList: React.FC = () => {
@@ -103,6 +104,23 @@ const TableList: React.FC = () => {
       className: 'fullClass',
     },
   ];
+  const buildTree = (data: any[], referrerId=1) => {
+    const result: any[] = [];
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].referrerId === referrerId) {
+        const node = {
+          ...data[i],
+          children: buildTree(data, data[i].id),
+        };
+        if (node.children && node.children.length === 0) {
+          delete node.children; // 删除空的 children 属性
+        }
+        result.push(node);
+      }
+    }
+    return result
+  }
+ 
 
   return (
     <PageContainer>
@@ -143,7 +161,7 @@ const TableList: React.FC = () => {
             item.authenticated = authenticated;
           });
           return {
-            data: res?.data?.list || [],
+            data: buildTree(res?.data?.list || []),
             page: res?.data?.pageNum,
             success: true,
             total: res?.data?.totalSize,

@@ -1,304 +1,187 @@
-import { PlusOutlined } from '@ant-design/icons';
-import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
-import ProDescriptions from '@ant-design/pro-descriptions';
-import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
-import type { ActionType, ProColumns } from '@ant-design/pro-table';
-import ProTable from '@ant-design/pro-table';
-import { Badge, Button, Drawer, Form, Image, Input, message, Modal, Popconfirm } from 'antd';
-import React, { useRef, useState } from 'react';
-import type { FormValueType } from './components/UpdateForm';
-import UpdateForm from './components/UpdateForm';
-import type { TableListItem, TableListPagination } from './data';
-import { replayRule, removeRule, rule, updateRule, getDetailRule } from './service';
-import ProForm from '@ant-design/pro-form';
-/**
- * 更新节点
- *
- * @param fields
- */
+import { PageContainer } from '@ant-design/pro-layout';
+import { Radio, Table } from 'antd';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import type { TableListItem } from './data';
+import { rule} from './service';
+import { Line } from '@ant-design/charts';
 
-const handleUpdate = async (fields: FormValueType, currentRow?: TableListItem) => {
-  const hide = message.loading('正在配置', 50);
-  try {
-    await updateRule({
-      ...currentRow,
-      ...fields,
-    });
-    hide();
-    message.success('配置成功');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('配置失败请重试！');
-    return false;
-  }
-};
-/**
- * 删除节点
- *
- * @param selectedRows
- */
-
-const handleRemove = async (selectedRows: TableListItem[], actionRef?: any) => {
-  const hide = message.loading('正在删除');
-  if (!selectedRows) return true;
-  selectedRows.forEach(async (row) => {
-    try {
-      const res = await removeRule({
-        id: row.id,
-      });
-      hide();
-      if (res.code === 200) {
-        message.success('删除成功，即将刷新');
-        if (actionRef) {
-          actionRef.current?.reloadAndRest?.();
-        }
-      }
-      return true;
-    } catch (error) {
-      hide();
-      message.error('删除失败，请重试');
-      return false;
-    }
-  });
-  return true;
-};
+import style from './style.less'
 
 const TableList: React.FC = () => {
-  /** 新建窗口的弹窗 */
-  const [createModalVisible, handleModalVisible] = useState<boolean>(false);
-  /** 分布更新窗口的弹窗 */
-  const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
-  const [showDetail, setShowDetail] = useState<boolean>(false);
-  const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<TableListItem>();
-  const [selectedRowsState, setSelectedRows] = useState<TableListItem[]>([]);
-  const [content, setContent] = useState('');
-  const [sendContent, setSendContent] = useState('');
-  const formRef = useRef<any>();
-  const handleUpdateRecord = (record: TableListItem) => {
-    setCurrentRow(record);
-    handleModalVisible(true);
-    formRef?.current?.resetFields();
-    setContent(record.content)
-    setSendContent('')
-  };
-  const columns: ProColumns<any>[] = [
+  const [day, setDay] = useState(7)
+  const [dataSource, setDataSource] = useState<TableListItem | any>({})
+  const [loading, setLoading] = useState(true)
+  const itemRef = useRef<any>()
+  const columns = [
     {
-      title: 'ID',
-      dataIndex: 'id',
-      tip: '唯一的 key',
-      hideInTable: true,
+      title: '日期',
+      dataIndex: 'date',
     },
     {
-      title: '发送人Id',
-      dataIndex: 'form',
-      className: 'fullClass',
-    },
-    {
-      title: '消息内容',
-      dataIndex: 'content',
-      className: 'textAreaClass',
-    },
-    {
-      title: '发送人头像',
-      dataIndex: 'formPhoto',
-      className: 'fullClass',
-      render: (_, record) => {
-        return (
-          <Image src={record.formPhoto} width={120} height={120} style={{ objectFit: 'contain' }} />
-        );
-      },
-    },
-    {
-      title: '接收人Id',
-      dataIndex: 'to',
-      className: 'fullClass',
-      hideInTable: true,
-    },
-    {
-      title: '接收人头像',
-      dataIndex: 'toPhoto',
-      className: 'fullClass',
-      hideInTable: true,
-      render: (_, record) => {
-        return (
-          <Image src={record.toPhoto} width={120} height={120} style={{ objectFit: 'contain' }} />
-        );
-      },
-    },
-    {
-      title: '发送时间',
-      dataIndex: 'createTime',
-      className: 'fullClass',
-    },
-    {
-      title: '操作',
-      dataIndex: 'option',
-      valueType: 'option',
-      className: 'fullClass',
-      hideInDescriptions: true,
-      render: (_, record) => [
-        <Badge dot={!record.stat} key="update">
-          <a
-            onClick={() => {
-              handleUpdateRecord(record);
-            }}
-          >
-            回复
-          </a>
-        </Badge>,
-      ],
+      title: '人数',
+      dataIndex: 'num',
     },
   ];
-  const addNewNotice = () => {
-    setCurrentRow(undefined);
-    handleModalVisible(true);
-    formRef?.current?.resetFields();
+  const priceColumns = [
+    {
+      title: '日期',
+      dataIndex: 'date',
+    },
+    {
+      title: '金额',
+      dataIndex: 'num',
+    },
+  ];
+  const projectNumColumns = [
+    {
+      title: '日期',
+      dataIndex: 'date',
+    },
+    {
+      title: '个数',
+      dataIndex: 'num',
+    },
+  ];
+  const config = {
+    height: 400,
+    xField: 'date',
+    yField: 'num',
+    xAxis: {
+      visible: true,
+      position: 'bottom',
+      label: {
+        style: {
+          fontSize: 12,
+          fill: '#999',
+        },
+        formatter: (text: string) => text.replace('2023-', ''), // 使用 formatter 函数自定义刻度文本格式
+      },
+      line: {
+        style: {
+          stroke: '#EEE',
+          lineWidth: 2,
+        },
+      },
+    },
+    point: {
+      size: 5,
+      shape: 'diamond',
+    },
   };
 
-  const handleOk = async () => {
-    const hide = message.loading('正在回复');
-    try {
-      const res = await replayRule({
-        content: sendContent,
-        to: currentRow?.form,
-        type: 1,
-      });
-      handleModalVisible(false);
-      hide();
+  const getSummaryRow = (data: any[]) => {
+    const ctotal = data.reduce((total, current) => {
+      return total + Number(current.num);
+    }, 0);
+    // 自定义表格汇总行的内容
+    const totalRow = (
+      <Table.Summary fixed>
+      <Table.Summary.Row>
+        <Table.Summary.Cell index={0}>合计</Table.Summary.Cell>
+        <Table.Summary.Cell index={1}>{ctotal}</Table.Summary.Cell>
+      </Table.Summary.Row>
+    </Table.Summary>
+    );
+  
+    return totalRow;
+  };
+  const userListRow = useMemo(() => getSummaryRow(dataSource?.userList || []), [dataSource]);
+  const buyProjectPriceListRow = useMemo(() => getSummaryRow(dataSource?.buyProjectPriceList || []), [dataSource]);
+  const buyProjectNumListRow = useMemo(() => getSummaryRow(dataSource?.buyProjectNumList || []), [dataSource]);
+  const withdrawPriceListRow = useMemo(() => getSummaryRow(dataSource?.withdrawPriceList || []), [dataSource]);
+
+  useEffect(() => {
+    setLoading(true)
+    rule({day: day}).then((res: any) => {
       if (res.code === 200) {
-        message.success('操作成功，即将刷新');
-        if (actionRef) {
-          actionRef.current?.reloadAndRest?.();
-        }
+        setDataSource(res.data)
       }
-      return true;
-    } catch (error) {
-      hide();
-      message.error('操作失败，请重试');
-      return false;
-    }
-  };
-
+      setLoading(false)
+    }).catch(() => {
+      setLoading(false)
+    })
+  }, [day])
   return (
     <PageContainer>
-      <ProTable<TableListItem, TableListPagination>
-        actionRef={actionRef}
-        rowKey="id"
-        search={false}
-        dateFormatter="string"
-        pagination={{
-          pageSize: 10,
-        }}
-        request={async (params: TableListPagination) => {
-          const res: any = await rule({ pageNum: params.current, pageSize: params.pageSize });
-          return {
-            data: res?.data?.list || [],
-            page: res?.data?.pageNum,
-            success: true,
-            total: res?.data?.totalSize,
-          };
-        }}
-        columns={columns}
-        rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
-        }}
-      />
-      {selectedRowsState?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              已选择{' '}
-              <a
-                style={{
-                  fontWeight: 600,
-                }}
-              >
-                {selectedRowsState.length}
-              </a>{' '}
-              项 &nbsp;&nbsp;
-            </div>
+       <Radio.Group defaultValue={7} size="large" onChange={(e) => setDay(e.target.value)} buttonStyle="solid">
+        <Radio.Button value={7}>最近7天</Radio.Button>
+        <Radio.Button value={15}>最近15天</Radio.Button>
+        <Radio.Button value={30}>最近30天</Radio.Button>
+      </Radio.Group>
+      <div className={style.main}>
+        <div className={style.item} ref={itemRef}>
+          <div className={style.title}>注册用户统计</div>
+          {
+            itemRef?.current?.clientWidth ? <Line {...config} smooth {...{data: dataSource?.userList, width: itemRef?.current?.clientWidth || 500}} /> : null
           }
-        >
-          <Popconfirm
-            title="确认删除？"
-            onConfirm={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-            onCancel={() => {
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            <Button style={{ width: '100px' }}>
-              {selectedRowsState.length > 1 ? '批量删除' : '删除'}
-            </Button>
-          </Popconfirm>
-        </FooterToolbar>
-      )}
-      <Modal
-        title="回复"
-        visible={createModalVisible}
-        onOk={() => handleOk()}
-        onCancel={() => handleModalVisible(false)}
-      >
-        <ProForm formRef={formRef} submitter={false}>
-          <Form.Item label="对方发送消息">
-            <Input.TextArea value={content} />
-          </Form.Item>
-          <Form.Item label="回复消息">
-            <Input.TextArea placeholder='请输入回复内容' value={sendContent} onChange={(e) => setSendContent(e.target.value)} />
-          </Form.Item>
-        </ProForm>
-      </Modal>
-      <UpdateForm
-        onSubmit={async (value) => {
-          const success = await handleUpdate(value, currentRow);
-          if (success) {
-            handleUpdateModalVisible(false);
-            setCurrentRow(undefined);
-
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
+          <Table 
+            columns={columns} 
+            dataSource={dataSource?.userList || []} 
+            pagination={false} 
+            scroll={{ y: 240 }} 
+            loading={loading} 
+            rowKey={'date'} 
+            bordered 
+            summary={() => (
+              userListRow
+            )}
+            />
+        </div>
+        <div className={style.item}>
+          <div className={style.title}>购买项目金额统计</div>
+          {
+            itemRef?.current?.clientWidth ? <Line {...config} smooth {...{data: dataSource?.buyProjectPriceList, width: itemRef?.current?.clientWidth || 500}} /> : null
           }
-        }}
-        onCancel={() => {
-          handleUpdateModalVisible(false);
-          setCurrentRow(undefined);
-        }}
-        updateModalVisible={updateModalVisible}
-        values={currentRow || {}}
-      />
-
-      <Drawer
-        width={600}
-        visible={showDetail}
-        onClose={() => {
-          setCurrentRow(undefined);
-          setShowDetail(false);
-        }}
-        closable={false}
-      >
-        {currentRow?.id && (
-          <ProDescriptions<TableListItem>
-            column={2}
-            title={currentRow?.id}
-            request={async () => ({
-              data: currentRow || {},
-            })}
-            params={{
-              id: currentRow?.id,
-            }}
-            columns={columns as ProDescriptionsItemProps<TableListItem>[]}
-          />
-        )}
-      </Drawer>
+          <Table 
+            columns={priceColumns} 
+            dataSource={dataSource?.buyProjectPriceList || []} 
+            pagination={false} 
+            scroll={{ y: 240 }} 
+            loading={loading} 
+            rowKey={'date'} 
+            bordered 
+            summary={() => (
+              buyProjectPriceListRow
+            )}
+            />
+        </div>
+        <div className={style.item}>
+          <div className={style.title}>购买项目数量统计</div>
+          {
+            itemRef?.current?.clientWidth ? <Line {...config} smooth {...{data: dataSource?.buyProjectNumList, width: itemRef?.current?.clientWidth || 500}} /> : null
+          }
+          <Table 
+            columns={projectNumColumns} 
+            dataSource={dataSource?.buyProjectNumList || []} 
+            pagination={false} 
+            scroll={{ y: 240 }} 
+            loading={loading} 
+            rowKey={'date'} 
+            bordered 
+            summary={() => (
+              buyProjectNumListRow
+            )}
+            />
+        </div>
+        <div className={style.item}>
+          <div className={style.title}>提现金额统计</div>
+          {
+            itemRef?.current?.clientWidth ? <Line {...config} smooth {...{data: dataSource?.withdrawPriceList, width: itemRef?.current?.clientWidth || 500}} /> : null
+          }
+          <Table 
+            columns={priceColumns} 
+            dataSource={dataSource?.withdrawPriceList || []} 
+            pagination={false} 
+            scroll={{ y: 240 }} 
+            loading={loading} 
+            rowKey={'date'} 
+            bordered 
+            summary={() => (
+              withdrawPriceListRow
+            )}
+            />
+        </div>
+      </div>
     </PageContainer>
   );
 };

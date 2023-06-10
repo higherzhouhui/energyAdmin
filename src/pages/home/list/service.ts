@@ -4,27 +4,12 @@ import { request } from 'umi';
 import { TableListItem } from './data';
 
 /** 获取规则列表 GET /api/rule */
-export async function rule(
-  params: {
-    // query
-    /** 当前的页码 */
-    pageNum?: number;
-    /** 页面的容量 */
-    pageSize?: number;
-  },
-  options?: { [key: string]: any },
-) {
-  return request<{
-    data: TableListItem[];
-    /** 列表的内容总数 */
-    total?: number;
-    success?: boolean;
-  }>('/admin/chat-message/getPageList', {
+export async function rule(params: {day: number}) {
+  return request<{data: TableListItem}>('/admin/home/getCountData', {
     method: 'GET',
     params: {
       ...params,
     },
-    ...(options || {}),
   });
 }
 

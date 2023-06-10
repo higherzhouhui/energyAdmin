@@ -1,12 +1,21 @@
 @import '~antd/es/style/themes/default.less';
 
-.table-img {
-  width: 48px;
-  height: 48px;
-  cursor: zoom-in;
-}
-.modal-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+.main {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  row-gap: 20px;
+  margin-top: 12px;
+  @media screen and (min-width: 1440px) {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 20px;
+  }
+  .item {
+    border: 1px solid #c0b7b7;
+    .title {
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 30px;
+      padding: 0 12px;
+    }
+  }
 }

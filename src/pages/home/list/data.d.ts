@@ -1,15 +1,33 @@
 export type TableListItem = {
-  id: number;
-  form: string;
-  to: string;
-  createTime: string;
-  content: string;
-  stat: boolean;
+  //购买项目数量
+  buyProjectNumList: [{
+    date: string;
+    num: number;
+   }];
+   //购买项目金额
+   buyProjectPriceList: [{
+    date: string;
+    num: number;
+   }];
+   // 购买项目总金额
+   buyProjectSumPrice: number;
+   // 实名用户总数
+   sumUserNum: number;
+   // 用户统计
+   userList: [{
+    date: string;
+    num: number;
+   }];
+   //出款金额
+   withdrawPriceList: [{
+    date: string;
+    num: number;
+  }];
+  withdrawSumPrice: '总出款金额'
 };
 
 export type TableListPagination = {
-  pageSize: number;
-  current: number;
+  day: number
 };
 
 export type TableListData = {
