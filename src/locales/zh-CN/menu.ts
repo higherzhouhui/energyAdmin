@@ -37,7 +37,7 @@ export default {
   'menu.online': '在线客服',
   'menu.online.online-list': '消息列表',
   'menu.online.online-info': '客服配置',
-  'menu.upload': '在线客服',
+  'menu.upload': '文件管理',
   'menu.upload.upload-upload': '上传文件',
   'menu.account': '用户管理',
   'menu.account.account-list': '用户列表',
