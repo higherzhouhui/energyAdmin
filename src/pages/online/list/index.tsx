@@ -76,8 +76,8 @@ const TableList: React.FC = () => {
   const [content, setContent] = useState('');
   const formRef = useRef<any>();
   const [historyList, setHistoryList] = useState([])
-  const [freshTime, setFreshTime] = useState(10)
-  const [selectValue, setselectValue] = useState('10')
+  const [freshTime, setFreshTime] = useState(30)
+  const [selectValue, setselectValue] = useState('30')
   const timer = useRef<any>(null)
 
   const selectoptions = [
