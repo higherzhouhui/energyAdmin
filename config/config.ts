@@ -46,11 +46,13 @@ export default defineConfig({
         {
           path: '/home',
           redirect: '/home/list',
+          access: 'adminRouteFilter',
         },
         {
           name: 'home-list',
           path: '/home/list',
           component: './home/list',
+          access: 'adminRouteFilter',
         },
       ],
     },
@@ -62,11 +64,13 @@ export default defineConfig({
         {
           path: '/account',
           redirect: '/account/list',
+          access: 'adminRouteFilter',
         },
         {
           name: 'account-list',
           path: '/account/list',
           component: './account/list',
+          access: 'adminRouteFilter',
         },
       ],
     },
@@ -109,41 +113,49 @@ export default defineConfig({
         {
           path: '/datamanage',
           redirect: '/datamanage/noticelist',
+          access: 'adminRouteFilter',
         },
         {
           name: 'datamanage-noticelist',
           path: '/datamanage/noticelist',
           component: './datamanage/noticelist',
+          access: 'adminRouteFilter',
         },
         {
           name: 'datamanage-bannerlist',
           path: '/datamanage/bannerlist',
           component: './datamanage/bannerlist',
+          access: 'adminRouteFilter',
         },
         {
           name: 'datamanage-newslist',
           path: '/datamanage/newslist',
           component: './datamanage/newslist',
+          access: 'adminRouteFilter',
         },
         {
           name: 'datamanage-projectlist',
           path: '/datamanage/projectlist',
           component: './datamanage/projectlist',
+          access: 'adminRouteFilter',
         },
         {
           name: 'datamanage-tuiguang',
           path: '/datamanage/tuiguang',
           component: './datamanage/list',
+          access: 'adminRouteFilter',
         },
         {
           name: 'datamanage-baseinfo',
           path: '/datamanage/baseinfo',
           component: './datamanage/baseinfo',
+          access: 'adminRouteFilter',
         },
         {
           name: 'datamanage-version',
           path: '/datamanage/version',
           component: './datamanage/version',
+          access: 'adminRouteFilter',
         },
         {
           component: '404',
@@ -158,11 +170,13 @@ export default defineConfig({
         {
           path: '/withdraw',
           redirect: '/withdraw/list',
+          access: 'adminRouteFilter',
         },
         {
           name: 'withdraw-list',
           path: '/withdraw/list',
           component: './withdraw/list',
+          access: 'adminRouteFilter',
         },
       ],
     },
@@ -174,16 +188,19 @@ export default defineConfig({
         {
           path: '/online',
           redirect: '/online/list',
+          access: 'serviceRouteFilter',
         },
         {
           name: 'online-list',
           path: '/online/list',
           component: './online/list',
+          access: 'serviceRouteFilter',
         },
         {
           name: 'online-info',
           path: '/online/info',
           component: './online/info',
+          access: 'serviceRouteFilter',
         },
       ],
     },
@@ -195,21 +212,25 @@ export default defineConfig({
         {
           path: '/admins',
           redirect: '/admins/list',
+          access: 'adminRouteFilter',
         },
         {
           path: '/admins/list',
           name: 'list',
           component: './admins/list',
+          access: 'adminRouteFilter',
         },
         {
           path: '/admins/add',
           name: 'add',
           component: './admins/add',
+          access: 'adminRouteFilter',
         },
         {
           path: '/admins/center',
           name: 'center',
           component: './admins/percenter',
+          access: 'adminRouteFilter',
           hideInMenu: true,
         },
         {
@@ -217,18 +238,21 @@ export default defineConfig({
           name: 'changepwd',
           component: './admins/changepwd',
           hideInMenu: true,
+          access: 'adminRouteFilter',
         },
         {
           path: '/admins/changepwd-result',
           name: 'changepwd-result',
           component: './admins/changepwd-result',
           hideInMenu: true,
+          access: 'adminRouteFilter',
         },
         {
           path: '/admins/addaccount-result',
           name: 'addaccount-result',
           component: './admins/changepwd-result',
           hideInMenu: true,
+          access: 'adminRouteFilter',
         },
         {
           component: '404',

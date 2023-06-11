@@ -22,8 +22,16 @@ export async function getInitialState(): Promise<{
 }> {
   const fetchUserInfo = async () => {
     try {
-      const msg = await queryCurrentUser();
-      return msg as any;
+      const msg: any = await queryCurrentUser();
+      let data;
+      if (msg.code === 200) {
+        (msg?.data?.list || []).forEach(item => {
+          if (item.accountName === localStorage.getItem('accountName')) {
+            data = item
+          }
+        })
+      }
+      return data as any;
     } catch (error) {
       history.push(loginPath);
     }

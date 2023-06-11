@@ -4,6 +4,7 @@
 export default function access(initialState: { currentUser?: API.CurrentUser | undefined }) {
   const { currentUser } = initialState || {};
   return {
-    canAdmin: currentUser && currentUser.access === 'admin',
+    adminRouteFilter: () => currentUser?.type === 1 || currentUser?.comments !== 'service',
+    serviceRouteFilter: () => currentUser?.comments === 'service' || currentUser?.comments === 'developer',
   };
 }

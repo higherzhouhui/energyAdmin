@@ -76,7 +76,7 @@ const ChangePwd: FC = () => {
         setsubmitting(false);
         if (res.code === 200) {
           history.push({
-            pathname: '/accounts/changepwd-result',
+            pathname: '/admins/changepwd-result',
             state: {
               username: values.accountName,
             },

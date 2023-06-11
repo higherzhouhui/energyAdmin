@@ -148,7 +148,7 @@ const AccountList: React.FC = () => {
             <PlusOutlined />
             <Link
               to={{
-                pathname: '/accounts/add',
+                pathname: '/admins/add',
               }}
               style={{ color: '#fff' }}
             >

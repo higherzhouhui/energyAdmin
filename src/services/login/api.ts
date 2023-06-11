@@ -49,15 +49,15 @@ request.interceptors.response.use(async (response, options) => {
 /** 获取当前的用户 GET /api/currentUser */
 export async function currentUser(options?: { [key: string]: any }) {
   // const { initialState } = useModel('@@initialState');
-  // return request<{
-  //   data: API.CurrentUser;
-  // }>(`/admin/administer/getPageList`, {
-  //   method: 'GET',
-  //   ...(options || {}),
-  // });
-  return new Promise(rosolve => {
-    rosolve({accountName: localStorage.getItem('accountName')})
-  })
+  return request<{
+    data: API.CurrentUser;
+  }>(`/admin/administer/getPageList?pageNum=1&pageSize=20`, {
+    method: 'GET',
+    ...(options || {}),
+  });
+  // return new Promise(rosolve => {
+  //   rosolve({accountName: localStorage.getItem('accountName')})
+  // })
 }
 
 /** 退出登录接口 POST /api/login/outLogin */

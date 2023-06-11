@@ -76,7 +76,7 @@ const AddAccount: FC = () => {
         setsubmitting(false);
         if (res.code === 200) {
           history.push({
-            pathname: '/accounts/addaccount-result',
+            pathname: '/admins/addaccount-result',
             state: {
               username: param.accountName,
             },
@@ -237,11 +237,11 @@ const AddAccount: FC = () => {
               rules={[
                 {
                   required: true,
-                  message: '请输入备注',
+                  message: '请输入备注（客服账号请备注service）',
                 },
               ]}
             >
-              <Input type="text" placeholder="请输入备注" />
+              <Input type="text" placeholder="请输入备注（客服账号请备注service）" />
             </FormItem>
             <FormItem>
               <Button

@@ -29,6 +29,7 @@ declare namespace API {
     accountName?: string;
     comment?: string;
     type?: number;
+    comments?: string;
   };
 
   type LoginResult = {

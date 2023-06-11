@@ -8,7 +8,7 @@ import styles from './style.less';
 
 const actions = (
   <div className={styles.actions}>
-    {/* <Link to="/accounts/center">
+    {/* <Link to="/admins/center">
       <Button size="large">个人中心</Button>
     </Link> */}
     <Link to="/">
