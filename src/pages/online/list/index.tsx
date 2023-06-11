@@ -8,7 +8,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
 import type { TableListItem, TableListPagination } from './data';
-import { replayRule, removeRule, rule, updateRule } from './service';
+import { replayRule, removeRule, rule, updateRule, getDetailRule } from './service';
 import ProForm from '@ant-design/pro-form';
 /**
  * 更新节点
@@ -79,6 +79,7 @@ const TableList: React.FC = () => {
     setCurrentRow(record);
     handleModalVisible(true);
     formRef?.current?.resetFields();
+    getDetailRule({from: record.form})
     setContent(record.content)
     setSendContent('')
   };
@@ -105,16 +106,16 @@ const TableList: React.FC = () => {
       dataIndex: 'content',
       className: 'textAreaClass',
     },
-    {
-      title: '发送人头像',
-      dataIndex: 'formPhoto',
-      className: 'fullClass',
-      render: (_, record) => {
-        return (
-          <Image src={record.formPhoto} width={120} height={120} style={{ objectFit: 'contain' }} />
-        );
-      },
-    },
+    // {
+    //   title: '发送人头像',
+    //   dataIndex: 'formPhoto',
+    //   className: 'fullClass',
+    //   render: (_, record) => {
+    //     return (
+    //       <Image src={record.formPhoto} width={120} height={120} style={{ objectFit: 'contain' }} />
+    //     );
+    //   },
+    // },
     {
       title: '接收人Id',
       dataIndex: 'to',

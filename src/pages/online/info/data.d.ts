@@ -1,11 +1,17 @@
 export type TableListItem = {
-  id: number;
-  form: string;
-  to: string;
-  createTime: string;
-  content: string;
-  stat: boolean;
-  userId: string;
+  course: string;
+  expandRule: string;
+  groupFreezeDay: string;
+  groupFreezeRatio: string;
+  groupName: string;
+  groupNum: string;
+  groupOne: string;
+  groupPhoto: string;
+  groupThree: string;
+  groupTwo: string;
+  id: string;
+  officialGroup: string;
+  video: string;
 };
 
 export type TableListPagination = {

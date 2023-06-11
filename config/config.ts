@@ -146,11 +146,6 @@ export default defineConfig({
           component: './datamanage/version',
         },
         {
-          name: 'datamanage-upload',
-          path: '/datamanage/upload',
-          component: './datamanage/upload',
-        },
-        {
           component: '404',
         },
       ],
@@ -185,37 +180,13 @@ export default defineConfig({
           path: '/online/list',
           component: './online/list',
         },
+        {
+          name: 'online-info',
+          path: '/online/info',
+          component: './online/info',
+        },
       ],
     },
-    // {
-    //   path: '/progress',
-    //   icon: 'pullRequest',
-    //   name: 'progress',
-    //   routes: [
-    //     {
-    //       path: '/progress',
-    //       redirect: '/progress/list',
-    //     },
-    //     {
-    //       name: 'progress-list',
-    //       path: '/progress/list',
-    //       component: './progress/list',
-    //     },
-    //     {
-    //       name: 'progress-info',
-    //       path: '/progress/mintInfo',
-    //       component: './progress/mintInfo',
-    //     },
-    //     {
-    //       name: 'progress-open',
-    //       path: '/progress/open',
-    //       component: './progress/open',
-    //     },
-    //     {
-    //       component: '404',
-    //     },
-    //   ],
-    // },
     {
       path: '/admins',
       icon: 'Setting',
@@ -261,6 +232,22 @@ export default defineConfig({
         },
         {
           component: '404',
+        },
+      ],
+    },
+    {
+      path: '/upload',
+      icon: 'Upload',
+      name: 'upload',
+      routes: [
+        {
+          path: '/upload',
+          redirect: '/upload/list',
+        },
+        {
+          name: 'upload-upload',
+          path: '/upload/upload',
+          component: './upload/upload',
         },
       ],
     },
