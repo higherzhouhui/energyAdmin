@@ -130,7 +130,7 @@ const TableList: React.FC = () => {
         search={false}
         dateFormatter="string"
         pagination={{
-          pageSize: 10,
+          pageSize: 100,
         }}
         scroll={{
           x: 1800,
@@ -161,7 +161,7 @@ const TableList: React.FC = () => {
             item.authenticated = authenticated;
           });
           return {
-            data: res?.data?.list || [],
+            data: buildTree(res?.data?.list || []),
             page: res?.data?.pageNum,
             success: true,
             total: res?.data?.totalSize,
