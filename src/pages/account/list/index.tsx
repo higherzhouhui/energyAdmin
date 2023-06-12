@@ -161,7 +161,7 @@ const TableList: React.FC = () => {
             item.authenticated = authenticated;
           });
           return {
-            data: buildTree(res?.data?.list || []),
+            data: res?.data?.list || [],
             page: res?.data?.pageNum,
             success: true,
             total: res?.data?.totalSize,
