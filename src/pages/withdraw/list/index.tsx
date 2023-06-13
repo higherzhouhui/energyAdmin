@@ -58,43 +58,54 @@ const TableList: React.FC = () => {
       title: 'ID',
       dataIndex: 'id',
       tip: '唯一的 key',
+      className: 'idClass',
     },
     {
       title: '姓名',
       dataIndex: 'name',
+      className: 'fullClass',
     },
     {
       title: '金额',
       dataIndex: 'amount',
+      className: 'fullClass',
     }, 
     {
       title: '手机号',
       dataIndex: 'phone',
+      className: 'fullClass',
     },{
       title: '银行名称',
       dataIndex: 'bankName',
+      className: 'fullClass',
     }, {
       title: '银行卡号',
       dataIndex: 'bankCode',
+      className: 'fullClass',
     }, {
       title: '状态',
       dataIndex: 'status',
+      className: 'fullClass',
     }, {
       title: '手续费',
       dataIndex: 'serviceCharge',
+      className: 'fullClass',
     },
     {
       title: '资金来源',
       dataIndex: 'typeStr',
+      className: 'fullClass',
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
+      className: 'fullClass',
     },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
+      className: 'fullClass',
       hideInDescriptions: true,
       render: (_, record) => [
         <a
