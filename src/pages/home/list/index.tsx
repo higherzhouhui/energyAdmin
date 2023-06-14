@@ -94,6 +94,22 @@ const TableList: React.FC = () => {
     setLoading(true)
     rule({day: day}).then((res: any) => {
       if (res.code === 200) {
+        (res?.data?.userList || []).map((item: any) => {
+          console.log(item.num, 1)
+          item.num = parseInt(item.num)
+        });
+        (res?.data?.buyProjectPriceList || []).map((item: any) => {
+          console.log(item.num, 2)
+          item.num = parseInt(item.num)
+        });
+        (res?.data?.buyProjectNumList || []).map((item: any) => {
+          console.log(item.num,3)
+          item.num = parseInt(item.num)
+        });
+        (res?.data?.withdrawPriceList || []).map((item: any) => {
+          console.log(item.num, 4)
+          item.num = parseInt(item.num)
+        });
         setDataSource(res.data)
       }
       setLoading(false)
