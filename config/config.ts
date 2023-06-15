@@ -163,19 +163,31 @@ export default defineConfig({
       ],
     },
     {
-      path: '/withdraw',
+      path: '/financial',
       icon: 'Transaction',
-      name: 'withdraw',
+      name: 'financial',
       routes: [
         {
-          path: '/withdraw',
-          redirect: '/withdraw/list',
+          path: '/financial',
+          redirect: '/financial/withdrawList',
           access: 'adminRouteFilter',
         },
         {
-          name: 'withdraw-list',
-          path: '/withdraw/list',
-          component: './withdraw/list',
+          name: 'withdrawList',
+          path: '/financial/withdrawList',
+          component: './financial/withdrawList',
+          access: 'adminRouteFilter',
+        },
+        {
+          name: 'transaction',
+          path: '/financial/transaction',
+          component: './financial/transaction',
+          access: 'adminRouteFilter',
+        },
+        {
+          name: 'bankAccount',
+          path: '/financial/bankAccount',
+          component: './financial/bankAccount',
           access: 'adminRouteFilter',
         },
       ],
