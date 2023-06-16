@@ -298,7 +298,7 @@ const TableList: React.FC = () => {
             <Input type='number' value={currentRow?.period} onChange={(e) => handleChange(e.target.value, 'period')} addonAfter="天" placeholder='请输入周期'/>
           </Form.Item>
           <Form.Item label="是否售罄">
-            <Radio.Group defaultValue={currentRow?.state} size="middle" onChange={(e) => handleChange(e.target.value, 'state')} buttonStyle="solid">
+            <Radio.Group value={currentRow?.state} size="middle" onChange={(e) => handleChange(e.target.value, 'state')} buttonStyle="solid">
               <Radio value={1}>否</Radio>
               <Radio value={0}>是</Radio>
             </Radio.Group>
