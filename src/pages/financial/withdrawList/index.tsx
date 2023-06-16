@@ -122,7 +122,7 @@ const TableList: React.FC = () => {
       hideInDescriptions: true,
       render: (_, record) => [
         <Popconfirm
-        title="确认删除？"
+        title="确认通过？"
         onConfirm={async () => {
           handleUpdateRecord(record, 1);
         }}
@@ -134,7 +134,7 @@ const TableList: React.FC = () => {
       </Popconfirm>,
         // eslint-disable-next-line react/jsx-key
         <Popconfirm
-          title="确认删除？"
+          title="确认驳回？"
           onConfirm={async () => {
             handleUpdateRecord(record, 2);
           }}
