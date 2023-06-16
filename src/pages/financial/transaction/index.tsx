@@ -1,7 +1,7 @@
-import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
+import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Form, Input, message, Modal, Popconfirm, Image } from 'antd';
+import { Form, Input, message, Modal, Popconfirm, Image } from 'antd';
 import React, { useRef, useState } from 'react';
 import type { TableListItem, TableListPagination } from './data';
 import { addRule, removeRule, rule, updateRule } from './service';
@@ -137,6 +137,7 @@ const TableList: React.FC = () => {
       title: '支付方式',
       dataIndex: 'payType',
       className: 'fullClass',
+      hideInSearch: true,
       valueEnum: {
         1: {
           text: '微信',
@@ -264,7 +265,7 @@ const TableList: React.FC = () => {
           y: document?.body?.clientHeight - 390,
         }}
         request={async (params: any) => {
-          const res: any = await rule({ pageNum: params.current, ...params });
+          const res: any = await rule({ pageNum: params.current, ...params, payType: 3 });
           // (res?.data?.list || []).map((item: any) => {
           //   let status = '审核中'
           //   if (item.state == 1) {
