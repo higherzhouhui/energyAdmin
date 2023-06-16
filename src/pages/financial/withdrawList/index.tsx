@@ -121,7 +121,7 @@ const TableList: React.FC = () => {
       className: 'fullClass',
       hideInDescriptions: true,
       render: (_, record) => [
-        record.auditStatus ? <Popconfirm
+        record.auditStatus == 0 ? <Popconfirm
         title="确认通过？"
         onConfirm={async () => {
           handleUpdateRecord(record, 1);
