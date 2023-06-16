@@ -77,15 +77,18 @@ const TableList: React.FC = () => {
       title: '交易单号',
       dataIndex: 'tradeNo',
       className: 'fullClass',
+      hideInSearch: true,
     },
     {
       title: '项目名称',
       dataIndex: 'title',
       className: 'fullClass',
+      hideInSearch: true,
     },{
       title: '价格',
       dataIndex: 'price',
       className: 'fullClass',
+      hideInSearch: true,
     },
     {
       title: '项目图',
@@ -100,10 +103,26 @@ const TableList: React.FC = () => {
       title: '手机号',
       dataIndex: 'phone',
       className: 'fullClass',
+      hideInSearch: true,
     }, {
       title: '状态',
-      dataIndex: 'status',
+      dataIndex: 'state',
       className: 'fullClass',
+      hideInSearch: true,
+      valueEnum: {
+        0: {
+          text: '审核中',
+          status: 'Processing',
+        },
+        1: {
+          text: '通过',
+          status: 'Success',
+        },
+        2: {
+          text: '驳回',
+          status: 'Error',
+        },
+      },
     }, 
     {
       title: '支付凭证',
@@ -118,11 +137,26 @@ const TableList: React.FC = () => {
       title: '支付方式',
       dataIndex: 'payType',
       className: 'fullClass',
+      valueEnum: {
+        1: {
+          text: '微信',
+          status: 'Processing',
+        },
+        2: {
+          text: '支付宝',
+          status: 'Success',
+        },
+        3: {
+          text: '银行卡',
+          status: 'Default',
+        },
+      },
     },
     {
       title: '订单创建时间',
       dataIndex: 'createTime',
       className: 'fullClass',
+      hideInSearch: true,
     },
     {
       title: '操作',
@@ -200,7 +234,7 @@ const TableList: React.FC = () => {
       // /upload为图片上传的地址，后台只需要一个图片的path
       // name，path，status是组件上传需要的格式需要自己去拼接
       request('/admin/upload/uploadImage', { method: 'POST', data: formData })
-        .then((data) => {
+        .then((data: any) => {
           const _response = { name: file.name, status: 'done', path: data.data };
           handleChange(data.data, 'icon');
           //请求成功后把file赋值上去
@@ -215,7 +249,12 @@ const TableList: React.FC = () => {
       <ProTable<TableListItem, TableListPagination>
         actionRef={actionRef}
         rowKey="id"
-        search={false}
+        search={{
+          labelWidth: 90,
+          //隐藏展开、收起
+          collapsed: false,
+          collapseRender:()=>false,
+        }}
         dateFormatter="string"
         pagination={{
           pageSize: 10,
@@ -224,24 +263,24 @@ const TableList: React.FC = () => {
           x: 1400,
           y: document?.body?.clientHeight - 390,
         }}
-        request={async (params: TableListPagination) => {
-          const res: any = await rule({ pageNum: params.current, pageSize: params.pageSize });
-          (res?.data?.list || []).map((item: any) => {
-            let status = '审核中'
-            if (item.auditStatus == 1) {
-              status = '通过'
-            } else if (item.auditStatus == 2) {
-              status = '驳回'
-            }
-            let payType = '银行卡'
-            if (item.payType == 1) {
-              payType = '微信'
-            } else if (item.payType == 2) {
-              payType = '支付宝'
-            }
-            item.status = status
-            item.payType = payType
-          })
+        request={async (params: any) => {
+          const res: any = await rule({ pageNum: params.current, ...params });
+          // (res?.data?.list || []).map((item: any) => {
+          //   let status = '审核中'
+          //   if (item.state == 1) {
+          //     status = '通过'
+          //   } else if (item.state == 2) {
+          //     status = '驳回'
+          //   }
+          //   let payType = '银行卡'
+          //   if (item.payType == 1) {
+          //     payType = '微信'
+          //   } else if (item.payType == 2) {
+          //     payType = '支付宝'
+          //   }
+          //   item.payType = payType
+          //   item.status = status
+          // })
           return {
             data: res?.data?.list || [],
             page: res?.data?.pageNum,

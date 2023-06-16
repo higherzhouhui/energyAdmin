@@ -2,7 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Form, Image, Input, message, Modal, Popconfirm } from 'antd';
+import { Button, Form, Image, Input, message, Modal, Popconfirm, Radio } from 'antd';
 import React, { useRef, useState } from 'react';
 import type { TableListItem, TableListPagination } from './data';
 import { addRule, removeRule, rule } from './service';
@@ -89,6 +89,22 @@ const TableList: React.FC = () => {
     {
       title: '周期（天）',
       dataIndex: 'period',
+    },
+    {
+      title: '是否售罄',
+      dataIndex: 'state',
+      className: 'fullClass',
+      hideInSearch: true,
+      valueEnum: {
+        0: {
+          text: '是',
+          status: 'Error',
+        },
+        1: {
+          text: '否',
+          status: 'Success',
+        }
+      },
     },
     {
       title: '创建时间',
@@ -280,6 +296,12 @@ const TableList: React.FC = () => {
           </Form.Item>
           <Form.Item label="周期">
             <Input type='number' value={currentRow?.period} onChange={(e) => handleChange(e.target.value, 'period')} addonAfter="天" placeholder='请输入周期'/>
+          </Form.Item>
+          <Form.Item label="是否售罄">
+            <Radio.Group defaultValue={currentRow?.state} size="middle" onChange={(e) => handleChange(e.target.value, 'state')} buttonStyle="solid">
+              <Radio value={1}>否</Radio>
+              <Radio value={0}>是</Radio>
+            </Radio.Group>
           </Form.Item>
         </ProForm>
       </Modal>

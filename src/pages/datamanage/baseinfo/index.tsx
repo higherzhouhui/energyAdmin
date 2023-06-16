@@ -8,7 +8,6 @@ import WangEditor from '@/components/Editor';
 
 const TableList: React.FC = () => {
   const [baseInfo, setBaseInfo] = useState([
-    {title: '教程', key: 'course', vlaue: ''},
     {title: '首页视频地址', key: 'video', vlaue: ''},
     {title: '官方群头像', key: 'groupPhoto', vlaue: ''},
     {title: '官方群名称', key: 'groupName', vlaue: ''},
@@ -20,10 +19,11 @@ const TableList: React.FC = () => {
     {title: '团队第二层奖励', key: 'groupTwo', vlaue: ''},
     {title: '团队第三层奖励', key: 'groupThree', vlaue: ''},
     {title: 'id', key: 'id', hide: true, value: ''},
+    {title: '教程', key: 'course', vlaue: '', hide: true},
     {title: '推广规则', key: 'expandRule', vlaue: '', hide: true},
   ])
   const [loading, setLoading] = useState(false)
-  useEffect(() => {
+  const initData = () => {
     setLoading(true)
     rule().then(res => {
       setLoading(false)
@@ -38,6 +38,9 @@ const TableList: React.FC = () => {
         message.error(res.msg || res.message)
       }
     })
+  }
+  useEffect(() => {
+    initData()
   }, [])
   const handleOk = async () => {
     const hide = message.loading(`正在更新`);
@@ -83,11 +86,16 @@ const TableList: React.FC = () => {
         }
       </div>
       <div className='tuiguang'>
+        <h2>教程</h2>
+        <WangEditor description={baseInfo[baseInfo.length - 2].value || ''} onChange={(e) => handleChange(e, baseInfo[baseInfo.length - 2].key || '')}/>
+      </div>
+      <div className='tuiguang'>
         <h2>推广规则</h2>
         <WangEditor description={baseInfo[baseInfo.length - 1].value || ''} onChange={(e) => handleChange(e, baseInfo[baseInfo.length - 1].key || '')}/>
       </div>
       <div className={styles.submit}>
-        <Button type='primary' size='large' loading={loading} onClick={() => handleOk()}>确定</Button>
+        <Button type='primary' size='large' loading={loading} onClick={() => handleOk()} style={{marginRight: '30px'}}>确定</Button>
+        <Button type='primary' size='large' loading={loading} onClick={() => initData()}>重置</Button>
       </div>
     </PageContainer>
   );
