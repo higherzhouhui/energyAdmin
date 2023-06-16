@@ -165,7 +165,7 @@ const TableList: React.FC = () => {
       className: 'fullClass',
       hideInDescriptions: true,
       render: (_, record) => [
-        <Popconfirm
+        record.state == 0 ? <Popconfirm
         title="确认通过？"
         onConfirm={async () => {
           handleUpdateRecord(record, 1);
@@ -175,9 +175,9 @@ const TableList: React.FC = () => {
         <a key="access">
         通过
         </a>
-      </Popconfirm>,
+      </Popconfirm> : null,
         // eslint-disable-next-line react/jsx-key
-        <Popconfirm
+        record.state == 0 ? <Popconfirm
           title="确认驳回？"
           onConfirm={async () => {
             handleUpdateRecord(record, 2);
@@ -187,7 +187,7 @@ const TableList: React.FC = () => {
           <a style={{ color: 'red' }} key="delete">
             驳回
           </a>
-        </Popconfirm>,
+        </Popconfirm> : null,
       ],
     },
   ];
