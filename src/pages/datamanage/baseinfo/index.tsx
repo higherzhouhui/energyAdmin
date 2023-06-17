@@ -8,6 +8,9 @@ import WangEditor from '@/components/Editor';
 
 const TableList: React.FC = () => {
   const [baseInfo, setBaseInfo] = useState([
+    {title: '支付宝支付（0是关闭；1是打开）', key: 'alipay', vlaue: '', type: 'number'},
+    {title: '微信支付（0是关闭；1是打开）', key: 'wechat', vlaue: '', type: 'number'},
+    {title: '银行卡支付（0是关闭；1是打开）', key: 'bankCard', vlaue: '', type: 'number'},
     {title: '首页视频地址', key: 'video', vlaue: ''},
     {title: '官方群头像', key: 'groupPhoto', vlaue: ''},
     {title: '官方群名称', key: 'groupName', vlaue: ''},
@@ -80,7 +83,7 @@ const TableList: React.FC = () => {
           baseInfo.map(item => {
             return !item.hide ? <div className={styles.formItem} key={item.key}>
             <div className={styles.label}>{item.title}</div>
-              <Input value={item.value} onChange={(e) => handleChange(e.target.value, item.key)} placeholder={`请输入${item.title}`}/>
+              <Input type={item.type || 'text'} value={item.value} onChange={(e) => handleChange(e.target.value, item.key)} placeholder={`请输入${item.title}`}/>
           </div> : null
           })
         }
@@ -95,7 +98,7 @@ const TableList: React.FC = () => {
       </div>
       <div className={styles.submit}>
         <Button type='primary' size='large' loading={loading} onClick={() => handleOk()} style={{marginRight: '30px'}}>确定</Button>
-        <Button type='primary' size='large' loading={loading} onClick={() => initData()}>重置</Button>
+        <Button type='default' size='large' loading={loading} onClick={() => initData()}>重置</Button>
       </div>
     </PageContainer>
   );
