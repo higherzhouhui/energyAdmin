@@ -9,8 +9,9 @@ import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
 import type { TableListItem, TableListPagination } from './data';
 import { replayRule, removeRule, rule, updateRule, getDetailRule } from './service';
-import ProForm from '@ant-design/pro-form';
+import ProForm, { ProFormUploadButton } from '@ant-design/pro-form';
 import style from './style.less'
+import { request } from 'umi';
 /**
  * 更新节点
  *
@@ -79,7 +80,7 @@ const TableList: React.FC = () => {
   const [freshTime, setFreshTime] = useState(30)
   const [selectValue, setselectValue] = useState('30')
   const timer = useRef<any>(null)
-
+  const [type, setType] = useState(1)
   const selectoptions = [
     {label: '10s', value: 10},
     {label: '30s', value: 30},
@@ -88,6 +89,7 @@ const TableList: React.FC = () => {
   ]
   const handleUpdateRecord = (record: TableListItem) => {
     formRef?.current?.resetFields();
+    setType(1)
     getDetailRule({form: record.form}).then(res => {
       if (res.code === 200) {
         setHistoryList(res.data)
@@ -138,17 +140,16 @@ const TableList: React.FC = () => {
       title: '消息内容',
       dataIndex: 'content',
       className: 'textAreaClass',
+      render: (_, record) => {
+        return (
+          <>
+          {
+            record.type == 1 ? <p>{record.content}</p> : <Image src={record.content} width={120} height={120} style={{ objectFit: 'contain' }} />
+          }
+          </>
+        );
+      },
     },
-    // {
-    //   title: '发送人头像',
-    //   dataIndex: 'formPhoto',
-    //   className: 'fullClass',
-    //   render: (_, record) => {
-    //     return (
-    //       <Image src={record.formPhoto} width={120} height={120} style={{ objectFit: 'contain' }} />
-    //     );
-    //   },
-    // },
     {
       title: '接收人Id',
       dataIndex: 'to',
@@ -202,7 +203,7 @@ const TableList: React.FC = () => {
       const res = await replayRule({
         content: content,
         to: currentRow?.form,
-        type: 1,
+        type: type,
       });
       handleModalVisible(false);
       hide();
@@ -220,6 +221,35 @@ const TableList: React.FC = () => {
     }
   };
 
+  const Upload = {
+    //数量
+    maxCount: 1,
+    accept: 'image/*',
+    customRequest: (options: any) => {
+      const { onSuccess, onError, file } = options;
+      const formData = new FormData();
+      formData.append('file', file);
+      // /upload为图片上传的地址，后台只需要一个图片的path
+      // name，path，status是组件上传需要的格式需要自己去拼接
+      request('/admin/upload/uploadImage', { method: 'POST', data: formData })
+        .then((data: any) => {
+          const _response = { name: file.name, status: 'done', path: data.data };
+          setType(2)
+          setContent(data.data)
+          //请求成功后把file赋值上去
+          onSuccess(_response, file);
+        })
+        .catch(onError);
+    },
+  };
+
+  const onchangeUpload = (data: any) => {
+    const { fileList } = data
+    if (!fileList.length) {
+      setType(1)
+      setContent('')
+    }
+  }
   return (
     <PageContainer>
       <div className={style.countTimeWrapper}>
@@ -309,12 +339,13 @@ const TableList: React.FC = () => {
                   item.form == 1 ? <>
                   <div className={style.content}>
                     <p>{item.createTime}</p>
-                    {item.content}
+                    {item.type == 1 ? item.content : <Image className={style.contentImg} src={item.content} />}
                   </div>
-                  <img src={item.formPhoto || 'http://img.zhengtaixinnengyuan.com/images/2023-06-11/b03b0934833b48748fa472378bca45c9.png'} /></> : <><img src={item.formPhoto} alt='无'/>
+                  <img className={style.avatar} src={item.formPhoto || 'http://img.zhengtaixinnengyuan.com/images/2023-06-11/b03b0934833b48748fa472378bca45c9.png'} /></> : 
+                  <><img className={style.avatar} src={item.formPhoto && item.formPhoto !== '1' ? item.formPhoto : 'http://img.zhengtaixinnengyuan.com/images/2023-06-09/c705b8dff6ad476f98b97c1708b63fb4.png'} alt='无'/>
                 <div className={style.content}>
                   <p>{item.createTime}</p>
-                  {item.content}
+                  {item.type == 1 ? item.content : <Image className={style.contentImg} src={item.content} />}
                 </div></>
                 }
               </div>
@@ -322,8 +353,19 @@ const TableList: React.FC = () => {
             }
            
           </div>
-          <h3>回复消息：</h3>
-          <Input.TextArea placeholder='请输入回复内容' value={content} onChange={(e) => setContent(e.target.value)} />
+          <h3>回复：</h3>
+          <ProFormUploadButton
+            max={1}
+            name="image"
+            title='选择图片'
+            onChange={onchangeUpload}
+            fieldProps={{
+              ...Upload,
+            }}
+          />
+          {
+            type === 1 ? <Input.TextArea placeholder='请输入回复内容' rows={3} value={content} onChange={(e) => setContent(e.target.value)} /> : content ? <Image className={style.replyImg} src={content} /> : null
+          }
         </ProForm>
       </Modal>
       <UpdateForm

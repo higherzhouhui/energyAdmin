@@ -10,7 +10,7 @@
   font-weight: bold;
 }
 .list {
-  max-height: 500px;
+  max-height: 400px;
   overflow: auto;
   background: #d4d3d3;
   padding: 8px 12px;
@@ -23,7 +23,7 @@
 .listItem {
   display: flex;
   margin-bottom: 12px;
-  img {
+  .avatar {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -31,6 +31,9 @@
     object-fit: fill;
     min-width: 50px;
     min-height: 50px;
+  }
+  .contentImg {
+    width: 200px;
   }
   .content {
     border-radius: 10px;
@@ -50,4 +53,7 @@
   .content {
     margin-right: 12px;
   }
+}
+.replyImg {
+  width: 300px;
 }

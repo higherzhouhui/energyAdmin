@@ -13,6 +13,7 @@ const TableList: React.FC = () => {
   /** 分布更新窗口的弹窗 */
   const [showDetail, setShowDetail] = useState(false)
   const [currentRow, setCurrentRow] = useState<any>()
+  const [total, setTotal] = useState(0)
   const actionRef = useRef<ActionType>();
   const columns: ProColumns<any>[] = [
     {
@@ -69,8 +70,8 @@ const TableList: React.FC = () => {
       hideInSearch: true,
     },
     {
-      title: '推荐人ID',
-      dataIndex: 'referrerId',
+      title: '推荐人数',
+      dataIndex: 'totalChildren',
       className: 'fullClass',
       hideInSearch: true,
     },
@@ -118,9 +119,12 @@ const TableList: React.FC = () => {
         const node = {
           ...data[i],
           children: buildTree(data, data[i].id),
+          totalChildren: 0,
         };
         if (node.children && node.children.length === 0) {
           delete node.children; // 删除空的 children 属性
+        } else {
+          node.totalChildren = node.children.length
         }
         result.push(node);
       }
@@ -135,21 +139,20 @@ const TableList: React.FC = () => {
         actionRef={actionRef}
         rowKey="mobilePhone"
         dateFormatter="string"
-        // eslint-disable-next-line react/jsx-no-duplicate-props
+        headerTitle={`总用户：${total}`}
         search={{
           labelWidth: 90,
           //隐藏展开、收起
           collapsed: false,
           collapseRender:()=>false,
         }}
-        pagination={{
-          pageSize: 100,
-        }}
+        pagination={false}
         scroll={{
           x: 1800,
+          y: document.body.clientHeight - 410
         }}
         request={async (params: TableListPagination) => {
-          const res: any = await rule({ pageNum: params.current, ...params });
+          const res: any = await rule({ pageNum: 1, pageSize: 99999 });
           (res?.data?.list || []).map((item: any) => {
             let delFlag = '正常';
             if (item.delFlag == 1) {
@@ -178,6 +181,7 @@ const TableList: React.FC = () => {
           } else {
             data = buildTree(res?.data?.list || [])
           }
+          setTotal(res?.data?.totalSize)
           return {
             data: data,
             page: res?.data?.pageNum,
