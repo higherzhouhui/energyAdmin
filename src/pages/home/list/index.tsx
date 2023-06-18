@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import { Radio, Table } from 'antd';
+import { Button, Radio, Table } from 'antd';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { TableListItem } from './data';
 import { rule} from './service';
@@ -126,7 +126,7 @@ const TableList: React.FC = () => {
       </Radio.Group>
       <div className={style.main}>
         <div className={style.item} ref={itemRef}>
-          <div className={style.title}>注册用户统计</div>
+          <div className={style.title}>实名用户统计</div>
           {
             itemRef?.current?.clientWidth ? <Line {...config} smooth {...{data: dataSource?.userList, width: itemRef?.current?.clientWidth || 500}} /> : null
           }

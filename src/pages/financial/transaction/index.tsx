@@ -1,7 +1,7 @@
-import { PageContainer } from '@ant-design/pro-layout';
+import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Form, Input, message, Modal, Popconfirm, Image } from 'antd';
+import { Button, Form, Input, message, Modal, Popconfirm, Image } from 'antd';
 import React, { useRef, useState } from 'react';
 import type { TableListItem, TableListPagination } from './data';
 import { addRule, removeRule, rule, updateRule } from './service';
@@ -70,30 +70,29 @@ const TableList: React.FC = () => {
       title: 'ID',
       dataIndex: 'id',
       tip: '唯一的 key',
-      className: 'idClass',
-      hideInTable: true,
+      width: 180
     },
     {
       title: '交易单号',
       dataIndex: 'tradeNo',
-      className: 'fullClass',
-      hideInSearch: true,
+      width: 200
     },
     {
-      title: '项目名称',
+      title: '购买项目',
       dataIndex: 'title',
-      className: 'fullClass',
       hideInSearch: true,
+      width: 200
     },{
       title: '价格',
       dataIndex: 'price',
-      className: 'fullClass',
       hideInSearch: true,
+      width: 80,
     },
     {
       title: '项目图',
       dataIndex: 'voucher',
       hideInSearch: true,
+      width: 130,
       render: (_, record) => {
         return (
           <Image src={record.image} width={120} height={120} style={{ objectFit: 'contain' }} />
@@ -102,20 +101,19 @@ const TableList: React.FC = () => {
     }, {
       title: '手机号',
       dataIndex: 'phone',
-      className: 'fullClass',
       hideInSearch: true,
+      width: 130,
     }, {
       title: '状态',
       dataIndex: 'state',
-      className: 'fullClass',
-      hideInSearch: true,
+      width: 100,
       valueEnum: {
         0: {
           text: '审核中',
           status: 'Processing',
         },
         1: {
-          text: '通过',
+          text: '完成',
           status: 'Success',
         },
         2: {
@@ -128,16 +126,20 @@ const TableList: React.FC = () => {
       title: '支付凭证',
       dataIndex: 'voucher',
       hideInSearch: true,
+      width: 130,
       render: (_, record) => {
         return (
-          <Image src={record.voucher} width={120} height={120} style={{ objectFit: 'contain' }} />
+          <>
+            {
+              record.payType === 3 ? <Image src={record.voucher} width={120} height={120} style={{ objectFit: 'contain' }} /> : null
+            }
+          </>
         );
       }
     }, {
       title: '支付方式',
       dataIndex: 'payType',
-      className: 'fullClass',
-      hideInSearch: true,
+      width: 100,
       valueEnum: {
         1: {
           text: '微信',
@@ -154,16 +156,16 @@ const TableList: React.FC = () => {
       },
     },
     {
-      title: '订单创建时间',
+      title: '创建时间',
       dataIndex: 'createTime',
-      className: 'fullClass',
+      width: 150,
       hideInSearch: true,
     },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      className: 'fullClass',
+      width: 120,
       hideInDescriptions: true,
       render: (_, record) => [
         record.state == 0 ? <Popconfirm
@@ -262,10 +264,10 @@ const TableList: React.FC = () => {
         }}
         scroll={{
           x: 1400,
-          y: document?.body?.clientHeight - 390,
+          y: document?.body?.clientHeight - 470,
         }}
         request={async (params: any) => {
-          const res: any = await rule({ pageNum: params.current, ...params, payType: 3 });
+          const res: any = await rule({ pageNum: params.current, ...params });
           // (res?.data?.list || []).map((item: any) => {
           //   let status = '审核中'
           //   if (item.state == 1) {

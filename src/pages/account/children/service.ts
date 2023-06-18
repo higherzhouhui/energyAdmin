@@ -11,6 +11,7 @@ export async function rule(
     pageNum?: number;
     /** 页面的容量 */
     pageSize?: number;
+    userId: string;
   },
   options?: { [key: string]: any },
 ) {
@@ -19,7 +20,7 @@ export async function rule(
     /** 列表的内容总数 */
     total?: number;
     success?: boolean;
-  }>('/admin/user/getPageList', {
+  }>('/admin/user/getSubUser', {
     method: 'GET',
     params: {
       ...params,

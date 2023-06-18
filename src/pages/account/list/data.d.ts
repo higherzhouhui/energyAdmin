@@ -12,12 +12,10 @@ export type TableListItem = {
   mobilePhone: string;
 };
 
-export interface TableListPagination extends TableListItem {
+export interface TableListPagination extends TableListItem{
   pageSize: number;
   current: number;
 };
-
-
 
 export type TableListData = {
   list: TableListItem[];

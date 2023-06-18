@@ -4,12 +4,13 @@ import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { Drawer, Form, Image, Input, Modal, Tag, message } from 'antd';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { TableListItem, TableListPagination } from './data';
 import { addRule, rule } from './service';
 import ProForm from '@ant-design/pro-form';
 import style from './style.less'
-import { history } from 'umi';
+import { history, useLocation } from 'umi';
+import { isArray } from 'lodash';
 
 const TableList: React.FC = () => {
   /** 分布更新窗口的弹窗 */
@@ -19,21 +20,62 @@ const TableList: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const formRef = useRef<any>()
+  const location = useLocation()
+  const [userId, setUserId] = useState([''])
+  const [userName, setUserName] = useState([''])
+  const getUserId = () => {
+    const id = (location as any).query.userId
+    const name = (location as any).query.name
+    if (typeof id === 'string') {
+      setUserId([id])
+      setUserName([name])
+    } else if (isArray(id)) {
+      setUserId(id)
+      setUserName(name)
+    }
+    actionRef.current?.reloadAndRest?.();
+  }
+
+  useEffect(() => {
+    getUserId()
+  }, [location.search])
+
   const handleUpdateRecord = (record: TableListItem) => {
     setCurrentRow(record);
     handleModalVisible(true);
     formRef?.current?.resetFields();
   }
-  const routeToChildren = (id: string, name: string) => {
-    history.push(`/account/children?userId=${id}&name=${name}`)
+  const routeToChildren = (id: string, name: string, type?: number) => {
+    if (type === userId.length - 1) {
+      return
+    }
+    if (type || type === 0) {
+      const ids = userId.splice(0, type + 1)
+      let path = location.pathname
+      if (ids.length > 1) {
+        ids.forEach((item, index) => {
+          if (index === 0) {
+            path += `?userId=${item}&name=${userName[index]}`
+          } else {
+            path += `&userId=${item}&name=${userName[index]}`
+          }
+        })
+      } else {
+        path += `?userId=${ids[0]}&name=${userName[0]}`
+      }
+      history.push(path)
+      return
+    } else {
+      history.push(`${location.pathname}${location.search}&userId=${id}&name=${name}`)
+    }
   }
   const columns: ProColumns<any>[] = [
     {
       title: 'ID',
-      dataIndex: 'id',
-      tip: '点击可查看下级会员',
-      width: 150,
+      dataIndex: 'totalChildren',
+      width: 130,
       hideInSearch: true,
+      tooltip: '点击可查看下级会员',
       render: (_, record) => {
         return (
           <div className={style.link} onClick={() => routeToChildren(record.id, record.name)}>{record.id}</div>
@@ -100,18 +142,6 @@ const TableList: React.FC = () => {
       dataIndex: 'idCard',
       width: 160,
       hideInSearch: true,
-    },
-    {
-      title: '推荐人ID',
-      dataIndex: 'referrerId',
-      width: 130,
-      hideInSearch: true,
-      tooltip: '点击可查看上级用户的所有下级会员',
-      render: (_, record) => {
-        return (
-          <div className={style.link} onClick={() => routeToChildren(record.referrerId, record.name)}>{record.referrerId}</div>
-        );
-      },
     },
     {
       title: '推荐人手机号',
@@ -231,29 +261,30 @@ const TableList: React.FC = () => {
     newRow[attar] = value
     setCurrentRow(newRow)
   }
+
+  const element = <div>
+    {
+      userId.map((item, index) => {
+        return <><span key={item} className={style.link} onClick={() => routeToChildren(item, '', index)}>{userName[index]}</span><span>{userId.length - 1 === index ? `的下级会员:${total}` : '—>'}</span></>
+      })
+    }
+  </div>
+
   return (
-    <PageContainer>
+    <PageContainer subTitle={<div className={style.link} onClick={() => history.push('/account/list')}>返回会员列表</div>}>
       <ProTable<TableListItem, TableListPagination>
         actionRef={actionRef}
-        rowKey="mobilePhone"
+        rowKey="id"
         dateFormatter="string"
-        // headerTitle={`总用户：${total}`}
-        search={{
-          labelWidth: 90,
-          //隐藏展开、收起
-          collapsed: false,
-          collapseRender:()=>false,
-        }}
-        pagination={{
-          pageSize: 10,
-          current: 1
-        }}
+        headerTitle={element}
+        search={false}
+        pagination={false}
         scroll={{
           x: 1800,
           y: document.body.clientHeight - 350
         }}
         request={async (params: TableListPagination) => {
-          const res: any = await rule({pageNum: params.current,...params});
+          const res: any = await rule({...params, pageNum: params.current, userId: userId[userId.length - 1]});
           // (res?.data?.list || []).map((item: any) => {
           //   let registerType = 'APP注册';
           //   if (item.registerType == 2) {
@@ -262,13 +293,13 @@ const TableList: React.FC = () => {
           //   item.registerType = registerType;
           // });
           let data: any = []
-          data = res?.data?.list || []
+          data = res?.data || []
           // if (params.mobilePhone) {
           //   data = res?.data?.list || []
           // } else {
           //   data = buildTree(res?.data?.list || [])
           // }
-          setTotal(res?.data?.totalSize)
+          setTotal(res?.data?.length)
           return {
             data: data,
             page: res?.data?.pageNum,

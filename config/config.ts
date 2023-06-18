@@ -72,6 +72,13 @@ export default defineConfig({
           component: './account/list',
           access: 'adminRouteFilter',
         },
+        {
+          name: 'account-children',
+          path: '/account/children',
+          component: './account/children',
+          access: 'adminRouteFilter',
+          hideInMenu: true,
+        },
       ],
     },
     {

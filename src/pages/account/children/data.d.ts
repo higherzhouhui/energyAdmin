@@ -9,13 +9,11 @@ export type TableListItem = {
   phone: string;
   serviceCharge: string;
   type: string;
-  image: string;
-  voucher: string;
-  state: number;
-  payType: number;
+  mobilePhone: string;
+  userId: string;
 };
 
-export type TableListPagination = {
+export interface TableListPagination extends TableListItem {
   pageSize: number;
   current: number;
 };
