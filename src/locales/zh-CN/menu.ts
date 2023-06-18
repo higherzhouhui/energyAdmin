@@ -41,7 +41,7 @@ export default {
   'menu.online.online-info': '客服配置',
   'menu.upload': '文件管理',
   'menu.upload.upload-upload': '上传文件',
-  'menu.account': '用户管理',
+  'menu.account': '会员管理',
   'menu.account.account-list': '会员列表',
   'menu.account.account-children': '下级会员列表',
   'menu.progress': 'Mint管理',
@@ -54,5 +54,5 @@ export default {
   'menu.admins.center': '个人中心',
   'menu.admins.changepwd': '修改密码',
   'menu.admins.changepwd-result': '密码修改成功',
-  'menu.admins.addaccount-result': '新增用户成功',
+  'menu.admins.addaccount-result': '新增管理员成功',
 };

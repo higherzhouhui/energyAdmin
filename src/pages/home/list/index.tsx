@@ -126,7 +126,7 @@ const TableList: React.FC = () => {
       </Radio.Group>
       <div className={style.main}>
         <div className={style.item} ref={itemRef}>
-          <div className={style.title}>实名用户统计</div>
+          <div className={style.title}>实名会员统计</div>
           {
             itemRef?.current?.clientWidth ? <Line {...config} smooth {...{data: dataSource?.userList, width: itemRef?.current?.clientWidth || 500}} /> : null
           }
