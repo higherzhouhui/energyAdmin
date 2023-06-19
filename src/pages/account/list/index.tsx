@@ -32,8 +32,9 @@ const TableList: React.FC = () => {
       title: 'ID',
       dataIndex: 'id',
       tip: '点击可查看下级会员',
-      width: 150,
+      width: 180,
       hideInSearch: true,
+      hideInTable: true,
       render: (_, record) => {
         return (
           <div className={style.link} onClick={() => routeToChildren(record.id, record.name)}>{record.id}</div>
@@ -43,7 +44,7 @@ const TableList: React.FC = () => {
     {
       title: '姓名',
       dataIndex: 'name',
-      width: 100,
+      width: 150,
       tooltip: '点击可查看该用户详情',
       hideInSearch: true,
       render: (dom, entity) => {
@@ -102,14 +103,14 @@ const TableList: React.FC = () => {
       hideInSearch: true,
     },
     {
-      title: '推荐人ID',
-      dataIndex: 'referrerId',
-      width: 130,
+      title: '推荐总人数',
+      dataIndex: 'totalChildren',
+      width: 110,
+      tooltip: '点击可查看下级会员',
       hideInSearch: true,
-      tooltip: '点击可查看上级用户的所有下级会员',
       render: (_, record) => {
         return (
-          <div className={style.link} onClick={() => routeToChildren(record.referrerId, record.name)}>{record.referrerId}</div>
+          <div className={style.link} onClick={() => routeToChildren(record.id, record.name)}>{record.totalChildren}</div>
         );
       },
     },
@@ -181,6 +182,18 @@ const TableList: React.FC = () => {
       ],
     },
   ];
+  const  getChildrenCount = (node: any) => {
+    if (!node || !node.children) {
+      // 如果没有子节点，则直接返回
+      return 0;
+    }
+    let childCount = node.children.length; // 子节点数量初始化为直接子节点数量
+    for (let i = 0; i < childCount; i++) {
+      // 递归获取每个直接子节点的子节点数量
+      childCount += getChildrenCount(node.children[i]);
+    }
+    return childCount; // 返回总子节点数量
+  }
   const buildTree = (data: any[], referrerId=1) => {
     const result: any[] = [];
     for (let i = 0; i < data.length; i++) {
@@ -192,8 +205,9 @@ const TableList: React.FC = () => {
         };
         if (node.children && node.children.length === 0) {
           delete node.children; // 删除空的 children 属性
-        } else {
-          node.totalChildren = node.children.length
+        }
+        if (node.children) {
+          node.totalChildren = getChildrenCount(node)
         }
         result.push(node);
       }
@@ -237,23 +251,24 @@ const TableList: React.FC = () => {
         actionRef={actionRef}
         rowKey="mobilePhone"
         dateFormatter="string"
-        // headerTitle={`总用户：${total}`}
+        headerTitle={`总会员：${total}`}
         search={{
           labelWidth: 90,
           //隐藏展开、收起
           collapsed: false,
           collapseRender:()=>false,
         }}
-        pagination={{
-          pageSize: 10,
-          current: 1
-        }}
+        // pagination={{
+        //   pageSize: 10,
+        //   current: 1
+        // }}
+        pagination={false}
         scroll={{
           x: 1800,
           y: document.body.clientHeight - 350
         }}
         request={async (params: TableListPagination) => {
-          const res: any = await rule({pageNum: params.current,...params});
+          const res: any = await rule({...params, pageNum: 1, pageSize: 99999});
           // (res?.data?.list || []).map((item: any) => {
           //   let registerType = 'APP注册';
           //   if (item.registerType == 2) {
@@ -263,11 +278,11 @@ const TableList: React.FC = () => {
           // });
           let data: any = []
           data = res?.data?.list || []
-          // if (params.mobilePhone) {
-          //   data = res?.data?.list || []
-          // } else {
-          //   data = buildTree(res?.data?.list || [])
-          // }
+          if (params.mobilePhone) {
+            data = res?.data?.list || []
+          } else {
+            data = buildTree(res?.data?.list || [])
+          }
           setTotal(res?.data?.totalSize)
           return {
             data: data,

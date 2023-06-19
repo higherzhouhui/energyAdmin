@@ -143,6 +143,17 @@ const TableList: React.FC = () => {
       width: 160,
       hideInSearch: true,
     },
+    // {
+    //   title: '推荐人数',
+    //   dataIndex: 'totalChildren',
+    //   width: 110,
+    //   tooltip: '点击可查看下级会员',
+    //   render: (_, record) => {
+    //     return (
+    //       <div className={style.link} onClick={() => routeToChildren(record.id, record.name)}>{record.totalChildren}</div>
+    //     );
+    //   },
+    // },
     {
       title: '推荐人手机号',
       dataIndex: 'referrerMobilePhone',
@@ -211,6 +222,18 @@ const TableList: React.FC = () => {
       ],
     },
   ];
+  const  getChildrenCount = (node: any) => {
+    if (!node || !node.children) {
+      // 如果没有子节点，则直接返回
+      return 0;
+    }
+    let childCount = node.children.length; // 子节点数量初始化为直接子节点数量
+    for (let i = 0; i < childCount; i++) {
+      // 递归获取每个直接子节点的子节点数量
+      childCount += getChildrenCount(node.children[i]);
+    }
+    return childCount; // 返回总子节点数量
+  }
   const buildTree = (data: any[], referrerId=1) => {
     const result: any[] = [];
     for (let i = 0; i < data.length; i++) {
@@ -222,8 +245,9 @@ const TableList: React.FC = () => {
         };
         if (node.children && node.children.length === 0) {
           delete node.children; // 删除空的 children 属性
-        } else {
-          node.totalChildren = node.children.length
+        }
+        if (node.children) {
+          node.totalChildren = getChildrenCount(node)
         }
         result.push(node);
       }
@@ -265,7 +289,7 @@ const TableList: React.FC = () => {
   const element = <div>
     {
       userId.map((item, index) => {
-        return <><span key={item} className={style.link} onClick={() => routeToChildren(item, '', index)}>{userName[index]}</span><span>{userId.length - 1 === index ? `的下级会员:${total}` : '—>'}</span></>
+        return <><span key={item} className={style.link} onClick={() => routeToChildren(item, '', index)}>{userName[index]}</span><span>{userId.length - 1 === index ? `的下一级会员:${total}` : '—>'}</span></>
       })
     }
   </div>
@@ -293,7 +317,8 @@ const TableList: React.FC = () => {
           //   item.registerType = registerType;
           // });
           let data: any = []
-          data = res?.data || []
+          // data = buildTree(res?.data || [], Number(userId[userId.length - 1] as any))
+          data = res?.data
           // if (params.mobilePhone) {
           //   data = res?.data?.list || []
           // } else {

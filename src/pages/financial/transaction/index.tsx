@@ -109,17 +109,13 @@ const TableList: React.FC = () => {
       width: 100,
       valueEnum: {
         0: {
-          text: '审核中',
+          text: '待支付',
           status: 'Processing',
         },
         1: {
-          text: '完成',
+          text: '已完成',
           status: 'Success',
-        },
-        2: {
-          text: '驳回',
-          status: 'Error',
-        },
+        }
       },
     }, 
     {
@@ -168,8 +164,8 @@ const TableList: React.FC = () => {
       width: 120,
       hideInDescriptions: true,
       render: (_, record) => [
-        record.state == 0 ? <Popconfirm
-        title="确认通过？"
+        record.state == 0 && record.payType === 3 ? <Popconfirm
+        title="确认通过审核？"
         onConfirm={async () => {
           handleUpdateRecord(record, 1);
         }}
@@ -178,19 +174,7 @@ const TableList: React.FC = () => {
         <a key="access">
         通过
         </a>
-      </Popconfirm> : null,
-        // eslint-disable-next-line react/jsx-key
-        record.state == 0 ? <Popconfirm
-          title="确认驳回？"
-          onConfirm={async () => {
-            handleUpdateRecord(record, 2);
-          }}
-          key="delete"
-        >
-          <a style={{ color: 'red' }} key="delete">
-            驳回
-          </a>
-        </Popconfirm> : null,
+      </Popconfirm> : null
       ],
     },
   ];
