@@ -1,4 +1,4 @@
-import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
+import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { Button, Form, Input, message, Modal, Popconfirm, Image } from 'antd';
@@ -7,7 +7,8 @@ import type { TableListItem, TableListPagination } from './data';
 import { addRule, removeRule, rule, updateRule } from './service';
 import ProForm, { ProFormUploadButton } from '@ant-design/pro-form';
 import { request } from 'umi';
-
+import { TableOutlined } from '@ant-design/icons';
+import * as XLSX from 'xlsx';
 /**
  * 删除节点
  *
@@ -162,6 +163,7 @@ const TableList: React.FC = () => {
       dataIndex: 'option',
       valueType: 'option',
       width: 120,
+      fixed: 'right',
       hideInDescriptions: true,
       render: (_, record) => [
         record.state == 0 && record.payType === 3 ? <Popconfirm
@@ -231,6 +233,12 @@ const TableList: React.FC = () => {
     },
   };
 
+  const export2Excel = (id: string, name: string) => {
+    const exportFileContent = document.getElementById(id)!.cloneNode(true);
+    const wb = XLSX.utils.table_to_book(exportFileContent, { sheet: 'sheet1' });
+    XLSX.writeFile(wb, `${name}.xlsx`);
+  };
+
   return (
     <PageContainer>
       <ProTable<TableListItem, TableListPagination>
@@ -242,6 +250,13 @@ const TableList: React.FC = () => {
           collapsed: false,
           collapseRender:()=>false,
         }}
+        id='myTable'
+        toolBarRender={() => [
+          <Button type="primary" key="primary" onClick={() => export2Excel('myTable', '订单列表')}>
+            <TableOutlined />
+            导出
+          </Button>,
+        ]}
         dateFormatter="string"
         pagination={{
           pageSize: 10,

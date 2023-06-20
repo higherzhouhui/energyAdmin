@@ -212,7 +212,7 @@ const TableList: React.FC = () => {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      width: 100,
+      width: 80,
       hideInDescriptions: true,
       fixed: 'right',
       render: (_, record) => [
@@ -289,7 +289,7 @@ const TableList: React.FC = () => {
   const element = <div>
     {
       userId.map((item, index) => {
-        return <><span key={item} className={style.link} onClick={() => routeToChildren(item, '', index)}>{userName[index]}</span><span>{userId.length - 1 === index ? `的下一级会员:${total}` : '—>'}</span></>
+        return <><span key={item} className={style.link} onClick={() => routeToChildren(item, '', index)}>{userName[index] || userId[index]}</span><span>{userId.length - 1 === index ? `的下一级会员:${total}` : '—>'}</span></>
       })
     }
   </div>

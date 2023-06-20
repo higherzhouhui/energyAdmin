@@ -10,6 +10,7 @@ export type TableListItem = {
   serviceCharge: string;
   type: string;
   mobilePhone: string;
+  totalChildren?: number;
 };
 
 export interface TableListPagination extends TableListItem{

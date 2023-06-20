@@ -4,16 +4,7 @@ import { request } from 'umi';
 import { TableListItem } from './data';
 
 /** 获取规则列表 GET /api/rule */
-export async function rule(
-  params: {
-    // query
-    /** 当前的页码 */
-    pageNum?: number;
-    /** 页面的容量 */
-    pageSize?: number;
-  },
-  options?: { [key: string]: any },
-) {
+export async function rule() {
   return request<{
     data: TableListItem[];
     /** 列表的内容总数 */
@@ -21,10 +12,6 @@ export async function rule(
     success?: boolean;
   }>('/admin/user-card/getUserCard', {
     method: 'GET',
-    params: {
-      ...params,
-    },
-    ...(options || {}),
   });
 }
 

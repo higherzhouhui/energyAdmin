@@ -7,7 +7,8 @@ import type { TableListItem, TableListPagination } from './data';
 import { addRule, removeRule, rule, updateRule } from './service';
 import ProForm, { ProFormUploadButton } from '@ant-design/pro-form';
 import { request } from 'umi';
-
+import * as XLSX from 'xlsx'
+import { TableOutlined } from '@ant-design/icons';
 /**
  * 删除节点
  *
@@ -72,53 +73,76 @@ const TableList: React.FC = () => {
       tip: '唯一的 key',
       className: 'idClass',
       hideInTable: true,
+      hideInSearch: true,
     },
     {
       title: '姓名',
       dataIndex: 'name',
-      className: 'fullClass',
+      width: 120,
+      hideInSearch: true,
     },
     {
       title: '金额',
       dataIndex: 'amount',
-      className: 'fullClass',
+      width: 100,
+      hideInSearch: true,
     }, 
     {
       title: '手机号',
       dataIndex: 'phone',
-      className: 'fullClass',
+      width: 150,
     },{
       title: '银行名称',
       dataIndex: 'bankName',
-      className: 'fullClass',
+      width: 200,
+      hideInSearch: true,
     }, {
       title: '银行卡号',
       dataIndex: 'bankCode',
-      className: 'fullClass',
+      width: 180,
+      hideInSearch: true,
     }, {
       title: '状态',
-      dataIndex: 'status',
-      className: 'fullClass',
+      dataIndex: 'auditStatus',
+      width: 120,
+      valueEnum: {
+        0: {
+          text: '审核中',
+          status: 'Processing',
+        },
+        1: {
+          text: '已完成',
+          status: 'Success',
+        },
+        2: {
+          text: '驳回',
+          status: 'Error',
+        }
+      },
     }, {
       title: '手续费',
       dataIndex: 'serviceCharge',
-      className: 'fullClass',
+      width: 80,
+      hideInSearch: true,
     },
     {
       title: '资金来源',
       dataIndex: 'type',
-      className: 'fullClass',
+      width: 150,
+      hideInSearch: true,
     },
     {
-      title: '创建时间',
+      title: '申请时间',
       dataIndex: 'createTime',
-      className: 'fullClass',
+      width: 150,
+      hideInSearch: true,
     },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      className: 'fullClass',
+      width: 120,
+      fixed: 'right',
       hideInDescriptions: true,
       render: (_, record) => [
         record.auditStatus == 0 ? <Popconfirm
@@ -200,12 +224,30 @@ const TableList: React.FC = () => {
     },
   };
 
+  const export2Excel = (id: string, name: string) => {
+    const exportFileContent = document.getElementById(id)!.cloneNode(true);
+    const wb = XLSX.utils.table_to_book(exportFileContent, { sheet: 'sheet1' });
+    XLSX.writeFile(wb, `${name}.xlsx`);
+  };
+
   return (
     <PageContainer>
       <ProTable<TableListItem, TableListPagination>
         actionRef={actionRef}
         rowKey="id"
-        search={false}
+        id='myTable'
+        toolBarRender={() => [
+          <Button type="primary" key="primary" onClick={() => export2Excel('myTable', '出款审核列表')}>
+            <TableOutlined />
+            导出
+          </Button>,
+        ]}
+        search={{
+          labelWidth: 90,
+          //隐藏展开、收起
+          collapsed: false,
+          collapseRender:()=>false,
+        }}
         dateFormatter="string"
         pagination={{
           pageSize: 10,
@@ -215,16 +257,16 @@ const TableList: React.FC = () => {
           y: document?.body?.clientHeight - 390,
         }}
         request={async (params: TableListPagination) => {
-          const res: any = await rule({ pageNum: params.current, pageSize: params.pageSize });
-          (res?.data?.list || []).map((item: any) => {
-            let status = '审核中'
-            if (item.auditStatus == 1) {
-              status = '通过'
-            } else if (item.auditStatus == 2) {
-              status = '驳回'
-            }
-            item.status = status
-          })
+          const res: any = await rule({ ...params, pageNum: params.current });
+          // (res?.data?.list || []).map((item: any) => {
+          //   let status = '审核中'
+          //   if (item.auditStatus == 1) {
+          //     status = '通过'
+          //   } else if (item.auditStatus == 2) {
+          //     status = '驳回'
+          //   }
+          //   item.status = status
+          // })
           return {
             data: res?.data?.list || [],
             page: res?.data?.pageNum,

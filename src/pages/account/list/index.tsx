@@ -3,14 +3,15 @@ import ProDescriptions from '@ant-design/pro-descriptions';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Drawer, Form, Image, Input, Modal, Tag, message } from 'antd';
+import { Button, Drawer, Form, Image, Input, Modal, Tag, message } from 'antd';
 import React, { useRef, useState } from 'react';
 import type { TableListItem, TableListPagination } from './data';
 import { addRule, rule } from './service';
 import ProForm from '@ant-design/pro-form';
 import style from './style.less'
 import { history } from 'umi';
-
+import * as XLSX from 'xlsx'
+import { TableOutlined } from '@ant-design/icons';
 const TableList: React.FC = () => {
   /** 分布更新窗口的弹窗 */
   const [showDetail, setShowDetail] = useState(false)
@@ -24,8 +25,8 @@ const TableList: React.FC = () => {
     handleModalVisible(true);
     formRef?.current?.resetFields();
   }
-  const routeToChildren = (id: string, name: string) => {
-    history.push(`/account/children?userId=${id}&name=${name}`)
+  const routeToChildren = (record: TableListItem) => {
+    history.push(`/account/children?userId=${record.id}&name=${record.name}`)
   }
   const columns: ProColumns<any>[] = [
     {
@@ -37,7 +38,7 @@ const TableList: React.FC = () => {
       hideInTable: true,
       render: (_, record) => {
         return (
-          <div className={style.link} onClick={() => routeToChildren(record.id, record.name)}>{record.id}</div>
+          <div className={style.link} onClick={() => routeToChildren(record)}>{record.id}</div>
         );
       },
     },
@@ -110,7 +111,7 @@ const TableList: React.FC = () => {
       hideInSearch: true,
       render: (_, record) => {
         return (
-          <div className={style.link} onClick={() => routeToChildren(record.id, record.name)}>{record.totalChildren}</div>
+          <div className={style.link} onClick={() => routeToChildren(record)}>{record.totalChildren !== undefined ? record.totalChildren : '查看下级会员'}</div>
         );
       },
     },
@@ -172,7 +173,7 @@ const TableList: React.FC = () => {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      width: 100,
+      width: 80,
       hideInDescriptions: true,
       fixed: 'right',
       render: (_, record) => [
@@ -245,18 +246,33 @@ const TableList: React.FC = () => {
     newRow[attar] = value
     setCurrentRow(newRow)
   }
+
+  const export2Excel = (id: string, name: string) => {
+    const exportFileContent = document.getElementById(id)!.cloneNode(true);
+    const wb = XLSX.utils.table_to_book(exportFileContent, { sheet: 'sheet1' });
+    XLSX.writeFile(wb, `${name}.xlsx`);
+  };
+
   return (
     <PageContainer>
       <ProTable<TableListItem, TableListPagination>
         actionRef={actionRef}
         rowKey="mobilePhone"
         dateFormatter="string"
+        id='myTable'
         headerTitle={`总会员：${total}`}
+        toolBarRender={() => [
+          <Button type="primary" key="primary" onClick={() => export2Excel('myTable', '会员列表')}>
+            <TableOutlined />
+            导出
+          </Button>,
+        ]}
         search={{
           labelWidth: 90,
           //隐藏展开、收起
           collapsed: false,
           collapseRender:()=>false,
+          
         }}
         // pagination={{
         //   pageSize: 10,

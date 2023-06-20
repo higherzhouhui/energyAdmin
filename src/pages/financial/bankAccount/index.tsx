@@ -1,12 +1,11 @@
-import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
+import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Form, Input, message, Modal, Popconfirm } from 'antd';
+import { Form, Input, message, Modal } from 'antd';
 import React, { useRef, useState } from 'react';
 import type { TableListItem, TableListPagination } from './data';
 import { addRule, removeRule, rule, updateRule } from './service';
-import ProForm, { ProFormUploadButton } from '@ant-design/pro-form';
-import { request } from 'umi';
+import ProForm from '@ant-design/pro-form';
 
 /**
  * 删除节点
@@ -148,8 +147,8 @@ const TableList: React.FC = () => {
           x: 1400,
           y: document?.body?.clientHeight - 390,
         }}
-        request={async (params: TableListPagination) => {
-          const res: any = await rule({ pageNum: params.current, pageSize: params.pageSize });
+        request={async () => {
+          const res: any = await rule();
           return {
             data:[res?.data],
             page: res?.data?.pageNum,

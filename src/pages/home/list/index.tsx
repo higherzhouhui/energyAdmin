@@ -4,8 +4,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { TableListItem } from './data';
 import { rule} from './service';
 import { Line } from '@ant-design/charts';
-
 import style from './style.less'
+import * as XLSX from 'xlsx';
 
 const TableList: React.FC = () => {
   const [day, setDay] = useState(7)
@@ -78,7 +78,7 @@ const TableList: React.FC = () => {
       <Table.Summary fixed>
       <Table.Summary.Row>
         <Table.Summary.Cell index={0}>合计</Table.Summary.Cell>
-        <Table.Summary.Cell index={1}>{ctotal}</Table.Summary.Cell>
+        <Table.Summary.Cell index={1} className={style.ctotal}>{ctotal}</Table.Summary.Cell>
       </Table.Summary.Row>
     </Table.Summary>
     );
@@ -90,24 +90,25 @@ const TableList: React.FC = () => {
   const buyProjectNumListRow = useMemo(() => getSummaryRow(dataSource?.buyProjectNumList || []), [dataSource]);
   const withdrawPriceListRow = useMemo(() => getSummaryRow(dataSource?.withdrawPriceList || []), [dataSource]);
 
+  const export2Excel = (id: string, name: string) => {
+    const exportFileContent = document.getElementById(id)!.cloneNode(true);
+    const wb = XLSX.utils.table_to_book(exportFileContent, { sheet: 'sheet1' });
+    XLSX.writeFile(wb, `${name}.xlsx`);
+  };
   useEffect(() => {
     setLoading(true)
     rule({day: day}).then((res: any) => {
       if (res.code === 200) {
         (res?.data?.userList || []).map((item: any) => {
-          console.log(item.num, 1)
           item.num = parseInt(item.num)
         });
         (res?.data?.buyProjectPriceList || []).map((item: any) => {
-          console.log(item.num, 2)
           item.num = parseInt(item.num)
         });
         (res?.data?.buyProjectNumList || []).map((item: any) => {
-          console.log(item.num,3)
           item.num = parseInt(item.num)
         });
         (res?.data?.withdrawPriceList || []).map((item: any) => {
-          console.log(item.num, 4)
           item.num = parseInt(item.num)
         });
         setDataSource(res.data)
@@ -126,7 +127,10 @@ const TableList: React.FC = () => {
       </Radio.Group>
       <div className={style.main}>
         <div className={style.item} ref={itemRef}>
-          <div className={style.title}>实名会员统计</div>
+          <div className={style.topContent}>
+            <div className={style.title}>实名会员统计</div>
+            <Button size='middle' type='primary' onClick={() => export2Excel('userList', '实名会员统计')}>导出</Button>
+          </div>
           {
             itemRef?.current?.clientWidth ? <Line {...config} smooth {...{data: dataSource?.userList, width: itemRef?.current?.clientWidth || 500}} /> : null
           }
@@ -138,13 +142,17 @@ const TableList: React.FC = () => {
             loading={loading} 
             rowKey={'date'} 
             bordered 
+            id='userList'
             summary={() => (
               userListRow
             )}
             />
         </div>
         <div className={style.item}>
-          <div className={style.title}>购买项目金额统计</div>
+          <div className={style.topContent}>
+            <div className={style.title}>购买项目金额统计</div>
+            <Button size='middle' type='primary' onClick={() => export2Excel('buyProjectPriceList', '购买项目金额统计')}>导出</Button>
+          </div>
           {
             itemRef?.current?.clientWidth ? <Line {...config} smooth {...{data: dataSource?.buyProjectPriceList, width: itemRef?.current?.clientWidth || 500}} /> : null
           }
@@ -156,13 +164,17 @@ const TableList: React.FC = () => {
             loading={loading} 
             rowKey={'date'} 
             bordered 
+            id='buyProjectPriceList'
             summary={() => (
               buyProjectPriceListRow
             )}
             />
         </div>
         <div className={style.item}>
-          <div className={style.title}>购买项目数量统计</div>
+          <div className={style.topContent}>
+            <div className={style.title}>购买项目数量统计</div>
+            <Button size='middle' type='primary' onClick={() => export2Excel('buyProjectNumList', '购买项目数量统计')}>导出</Button>
+          </div>
           {
             itemRef?.current?.clientWidth ? <Line {...config} smooth {...{data: dataSource?.buyProjectNumList, width: itemRef?.current?.clientWidth || 500}} /> : null
           }
@@ -174,13 +186,17 @@ const TableList: React.FC = () => {
             loading={loading} 
             rowKey={'date'} 
             bordered 
+            id='buyProjectNumList'
             summary={() => (
               buyProjectNumListRow
             )}
             />
         </div>
         <div className={style.item}>
-          <div className={style.title}>提现金额统计</div>
+          <div className={style.topContent}>
+            <div className={style.title}>提现金额统计</div>
+            <Button size='middle' type='primary' onClick={() => export2Excel('withdrawPriceList', '提现金额统计')}>导出</Button>
+          </div>
           {
             itemRef?.current?.clientWidth ? <Line {...config} smooth {...{data: dataSource?.withdrawPriceList, width: itemRef?.current?.clientWidth || 500}} /> : null
           }
@@ -192,6 +208,7 @@ const TableList: React.FC = () => {
             loading={loading} 
             rowKey={'date'} 
             bordered 
+            id='withdrawPriceList'
             summary={() => (
               withdrawPriceListRow
             )}
