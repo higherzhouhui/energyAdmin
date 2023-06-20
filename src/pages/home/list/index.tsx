@@ -6,6 +6,7 @@ import { rule} from './service';
 import { Line } from '@ant-design/charts';
 import style from './style.less'
 import * as XLSX from 'xlsx';
+import { TableOutlined } from '@ant-design/icons';
 
 const TableList: React.FC = () => {
   const [day, setDay] = useState(7)
@@ -129,7 +130,7 @@ const TableList: React.FC = () => {
         <div className={style.item} ref={itemRef}>
           <div className={style.topContent}>
             <div className={style.title}>实名会员统计</div>
-            <Button size='middle' type='primary' onClick={() => export2Excel('userList', '实名会员统计')}>导出</Button>
+            <Button size='middle' type='primary' onClick={() => export2Excel('userList', '实名会员统计')}><TableOutlined />导出Excel</Button>
           </div>
           {
             itemRef?.current?.clientWidth ? <Line {...config} smooth {...{data: dataSource?.userList, width: itemRef?.current?.clientWidth || 500}} /> : null
@@ -151,7 +152,7 @@ const TableList: React.FC = () => {
         <div className={style.item}>
           <div className={style.topContent}>
             <div className={style.title}>购买项目金额统计</div>
-            <Button size='middle' type='primary' onClick={() => export2Excel('buyProjectPriceList', '购买项目金额统计')}>导出</Button>
+            <Button size='middle' type='primary' onClick={() => export2Excel('buyProjectPriceList', '购买项目金额统计')}><TableOutlined />导出Excel</Button>
           </div>
           {
             itemRef?.current?.clientWidth ? <Line {...config} smooth {...{data: dataSource?.buyProjectPriceList, width: itemRef?.current?.clientWidth || 500}} /> : null
@@ -173,7 +174,7 @@ const TableList: React.FC = () => {
         <div className={style.item}>
           <div className={style.topContent}>
             <div className={style.title}>购买项目数量统计</div>
-            <Button size='middle' type='primary' onClick={() => export2Excel('buyProjectNumList', '购买项目数量统计')}>导出</Button>
+            <Button size='middle' type='primary' onClick={() => export2Excel('buyProjectNumList', '购买项目数量统计')}><TableOutlined />导出Excel</Button>
           </div>
           {
             itemRef?.current?.clientWidth ? <Line {...config} smooth {...{data: dataSource?.buyProjectNumList, width: itemRef?.current?.clientWidth || 500}} /> : null
@@ -195,7 +196,7 @@ const TableList: React.FC = () => {
         <div className={style.item}>
           <div className={style.topContent}>
             <div className={style.title}>提现金额统计</div>
-            <Button size='middle' type='primary' onClick={() => export2Excel('withdrawPriceList', '提现金额统计')}>导出</Button>
+            <Button size='middle' type='primary' onClick={() => export2Excel('withdrawPriceList', '提现金额统计')}><TableOutlined />导出Excel</Button>
           </div>
           {
             itemRef?.current?.clientWidth ? <Line {...config} smooth {...{data: dataSource?.withdrawPriceList, width: itemRef?.current?.clientWidth || 500}} /> : null

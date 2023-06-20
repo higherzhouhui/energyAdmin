@@ -239,7 +239,7 @@ const TableList: React.FC = () => {
         toolBarRender={() => [
           <Button type="primary" key="primary" onClick={() => export2Excel('myTable', '出款审核列表')}>
             <TableOutlined />
-            导出
+            导出Excel
           </Button>,
         ]}
         search={{

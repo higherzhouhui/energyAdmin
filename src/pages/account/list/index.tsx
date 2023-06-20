@@ -93,17 +93,6 @@ const TableList: React.FC = () => {
       },
     },
     {
-      title: '手机号',
-      dataIndex: 'mobilePhone',
-      width: 110,
-    },
-    {
-      title: '身份证号',
-      dataIndex: 'idCard',
-      width: 160,
-      hideInSearch: true,
-    },
-    {
       title: '推荐总人数',
       dataIndex: 'totalChildren',
       width: 110,
@@ -114,6 +103,17 @@ const TableList: React.FC = () => {
           <div className={style.link} onClick={() => routeToChildren(record)}>{record.totalChildren !== undefined ? record.totalChildren : '查看下级会员'}</div>
         );
       },
+    },
+    {
+      title: '手机号',
+      dataIndex: 'mobilePhone',
+      width: 110,
+    },
+    {
+      title: '身份证号',
+      dataIndex: 'idCard',
+      width: 160,
+      hideInSearch: true,
     },
     {
       title: '推荐人手机号',
@@ -217,12 +217,17 @@ const TableList: React.FC = () => {
   }
  
   const handleOk = async () => {
+    if (!currentRow?.name || !currentRow?.idCard || !currentRow?.mobilePhone) {
+      message.warning('请输入完整信息!')
+      return
+    }
     const hide = message.loading(`正在${currentRow?.id ? '更新' : '新增'}`);
     try {
       const res = await addRule({
         id: currentRow?.id,
         name: currentRow?.name,
         idCard: currentRow?.idCard,
+        mobilePhone: currentRow?.mobilePhone,
       });
       handleModalVisible(false);
       hide();
@@ -264,7 +269,7 @@ const TableList: React.FC = () => {
         toolBarRender={() => [
           <Button type="primary" key="primary" onClick={() => export2Excel('myTable', '会员列表')}>
             <TableOutlined />
-            导出
+            导出Excel
           </Button>,
         ]}
         search={{
@@ -310,12 +315,16 @@ const TableList: React.FC = () => {
         columns={columns}
       />
       <Modal
-        title={currentRow?.id ? '修改实名认证信息' : '新增'}
+        title={currentRow?.id ? '修改会员信息' : '新增'}
         visible={createModalVisible}
         onOk={() => handleOk()}
         onCancel={() => handleModalVisible(false)}
+        width={500}
       >
         <ProForm formRef={formRef} submitter={false}>
+          <Form.Item label="手机号码">
+            <Input value={currentRow?.mobilePhone} onChange={(e) => handleChange(e.target.value, 'mobilePhone')}/>
+          </Form.Item>
           <Form.Item label="姓名">
             <Input value={currentRow?.name} onChange={(e) => handleChange(e.target.value, 'name')}/>
           </Form.Item>

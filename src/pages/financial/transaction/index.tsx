@@ -102,7 +102,6 @@ const TableList: React.FC = () => {
     }, {
       title: '手机号',
       dataIndex: 'phone',
-      hideInSearch: true,
       width: 130,
     }, {
       title: '状态',
@@ -254,7 +253,7 @@ const TableList: React.FC = () => {
         toolBarRender={() => [
           <Button type="primary" key="primary" onClick={() => export2Excel('myTable', '订单列表')}>
             <TableOutlined />
-            导出
+            导出Excel
           </Button>,
         ]}
         dateFormatter="string"

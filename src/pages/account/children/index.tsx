@@ -256,12 +256,17 @@ const TableList: React.FC = () => {
   }
  
   const handleOk = async () => {
+    if (!currentRow?.name || !currentRow?.idCard || !currentRow?.mobilePhone) {
+      message.warning('请输入完整信息!')
+      return
+    }
     const hide = message.loading(`正在${currentRow?.id ? '更新' : '新增'}`);
     try {
       const res = await addRule({
         id: currentRow?.id,
         name: currentRow?.name,
         idCard: currentRow?.idCard,
+        mobilePhone: currentRow?.mobilePhone,
       });
       handleModalVisible(false);
       hide();
@@ -335,12 +340,16 @@ const TableList: React.FC = () => {
         columns={columns}
       />
       <Modal
-        title={currentRow?.id ? '修改实名认证信息' : '新增'}
+        title={currentRow?.id ? '修改会员信息' : '新增'}
         visible={createModalVisible}
         onOk={() => handleOk()}
         onCancel={() => handleModalVisible(false)}
+        width={500}
       >
         <ProForm formRef={formRef} submitter={false}>
+          <Form.Item label="手机号码">
+            <Input value={currentRow?.mobilePhone} onChange={(e) => handleChange(e.target.value, 'mobilePhone')}/>
+          </Form.Item>
           <Form.Item label="姓名">
             <Input value={currentRow?.name} onChange={(e) => handleChange(e.target.value, 'name')}/>
           </Form.Item>

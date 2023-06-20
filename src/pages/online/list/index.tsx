@@ -1,9 +1,9 @@
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
-import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
+import { FooterToolbar, PageContainer, PageLoading } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Badge, Button, Drawer, Form, Image, Input, message, Modal, Popconfirm, Select } from 'antd';
+import { Badge, Button, Drawer, Form, Image, Input, message, Modal, Popconfirm, Select, Tag } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
@@ -81,29 +81,35 @@ const TableList: React.FC = () => {
   const [selectValue, setselectValue] = useState('30')
   const timer = useRef<any>(null)
   const [type, setType] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const listRef = useRef<any>()
+  const chatTimer = useRef<any>(null)
   const selectoptions = [
     {label: '10s', value: 10},
     {label: '30s', value: 30},
     {label: '60s', value: 60},
     {label: '120s', value: 120},
+    {label: '暂停刷新', value: 0},
   ]
-  const handleUpdateRecord = (record: TableListItem) => {
+  const handleUpdateRecord = async (record: TableListItem) => {
+    setLoading(true)
     formRef?.current?.resetFields();
     setType(1)
-    getDetailRule({form: record.form}).then(res => {
-      if (res.code === 200) {
-        setHistoryList(res.data)
-      }
-    })
     setCurrentRow(record);
     handleModalVisible(true);
     setContent('')
+    const res = await getDetailRule({form: record.form})
+    setLoading(false)
+      if (res.code === 200) {
+        setHistoryList(res.data)
+    }
+    listRef.current.scrollTop = listRef.current.scrollHeight
   };
 
   const getCurrentTime = (time: any) => {
     clearInterval(timer.current)
     let ctime = Number(time)
-    if (!isNaN(ctime)) {
+    if (!isNaN(ctime) && ctime) {
       timer.current = setInterval(() => {
         ctime -= 1
         if (ctime === 0) {
@@ -120,10 +126,6 @@ const TableList: React.FC = () => {
     getCurrentTime(e)
   }
 
-  useEffect(() => {
-    getCurrentTime(selectValue)
-    return () => clearInterval((timer as any).current)
-  }, [])
   const columns: ProColumns<any>[] = [
     {
       title: 'ID',
@@ -132,14 +134,19 @@ const TableList: React.FC = () => {
       hideInTable: true,
     },
     {
-      title: '发送人Id',
-      dataIndex: 'form',
-      className: 'fullClass',
+      title: '发送人手机号',
+      dataIndex: 'phone',
+      width: 150,
     },
     {
-      title: '消息内容',
+      title: '发送人Id',
+      dataIndex: 'form',
+      width: 150,
+      hideInTable: true,
+    },
+    {
+      title: '最新消息内容',
       dataIndex: 'content',
-      className: 'textAreaClass',
       render: (_, record) => {
         return (
           <>
@@ -153,13 +160,13 @@ const TableList: React.FC = () => {
     {
       title: '接收人Id',
       dataIndex: 'to',
-      className: 'fullClass',
+      width: 150,
       hideInTable: true,
     },
     {
       title: '接收人头像',
       dataIndex: 'toPhoto',
-      className: 'fullClass',
+      width: 150,
       hideInTable: true,
       render: (_, record) => {
         return (
@@ -170,52 +177,52 @@ const TableList: React.FC = () => {
     {
       title: '发送时间',
       dataIndex: 'createTime',
-      className: 'fullClass',
+      width: 150,
     },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      className: 'fullClass',
+      width: 120,
+      fixed: 'right',
       hideInDescriptions: true,
       render: (_, record) => [
         <Badge dot={!record.stat} key="update">
-          <a
+          <Button
             onClick={() => {
               handleUpdateRecord(record);
             }}
+            type='link'
+            size='middle'
           >
-            回复
-          </a>
+            去回复
+          </Button>
         </Badge>,
       ],
     },
   ];
-  const addNewNotice = () => {
-    setCurrentRow(undefined);
-    handleModalVisible(true);
+  const updateHistory = async () => {
+    setContent('')
+    setType(1)
     formRef?.current?.resetFields();
-  };
-
+    const hisRes = await getDetailRule({form: currentRow?.form})
+    if (hisRes.code === 200) {
+        setHistoryList(hisRes.data)
+    }
+    listRef.current.scrollTop = listRef.current.scrollHeight   
+  }
   const handleOk = async () => {
-    const hide = message.loading('正在回复');
     try {
       const res = await replayRule({
         content: content,
         to: currentRow?.form,
         type: type,
       });
-      handleModalVisible(false);
-      hide();
       if (res.code === 200) {
-        message.success('操作成功，即将刷新');
-        if (actionRef) {
-          actionRef.current?.reloadAndRest?.();
-        }
+        updateHistory()
       }
       return true;
     } catch (error) {
-      hide();
       message.error('操作失败，请重试');
       return false;
     }
@@ -250,19 +257,40 @@ const TableList: React.FC = () => {
       setContent('')
     }
   }
+
+  useEffect(() => {
+    getCurrentTime(selectValue)
+    return () => {
+      clearInterval((timer as any).current)
+      clearInterval(chatTimer.current)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (createModalVisible) {
+      chatTimer.current = setInterval(() => {
+        updateHistory()
+      }, 5000)
+    } else {
+      clearInterval(chatTimer.current)
+    }
+  }, [createModalVisible])
+
+
   return (
     <PageContainer>
       <div className={style.countTimeWrapper}>
         <span className={style.pinlv}>刷新频率</span>
-        <Select placeholder='请选择刷新频率' style={{width: 80, marginRight:  '12px'}} onChange={(e) => onchangeSelect(e)} value={selectValue}>
+        <Select placeholder='请选择刷新频率' style={{width: 120, marginRight:  '12px'}} onChange={(e) => onchangeSelect(e)} value={selectValue}>
         {
           selectoptions.map(item => {
             return <Select.Option key={item.value}>{item.label}</Select.Option>
           })
         }
         </Select>
-        <span className={style.countTime}>将在{freshTime}秒后刷新</span>
-
+        {
+          Number(selectValue) ? <Button type='primary' className={style.countTime}>将在{freshTime}秒后刷新</Button> : null
+        }
       </div>
       <ProTable<TableListItem, TableListPagination>
         actionRef={actionRef}
@@ -288,84 +316,56 @@ const TableList: React.FC = () => {
           },
         }}
       />
-      {selectedRowsState?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              已选择{' '}
-              <a
-                style={{
-                  fontWeight: 600,
-                }}
-              >
-                {selectedRowsState.length}
-              </a>{' '}
-              项 &nbsp;&nbsp;
-            </div>
-          }
-        >
-          <Popconfirm
-            title="确认删除？"
-            onConfirm={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-            onCancel={() => {
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            <Button style={{ width: '100px' }}>
-              {selectedRowsState.length > 1 ? '批量删除' : '删除'}
-            </Button>
-          </Popconfirm>
-        </FooterToolbar>
-      )}
       <Modal
-        title="回复"
+        title={`与${currentRow?.phone}用户的聊天记录`}
         visible={createModalVisible}
         width={700}
         onOk={() => handleOk()}
         onCancel={() => handleModalVisible(false)}
+        okText='回复'
+        cancelText='关闭'
       >
         <ProForm formRef={formRef} submitter={false}>
-          <div className={style.list}>
-            <h2>聊天记录</h2>
+          <div className={style.list} ref={listRef}>
             {
-              historyList.map((item: any) => {
-                return <div className={`${style.listItem} ${item.form == 1 ? style.specialClass : ''}`} key={item.createTime}>
-                {
-                  item.form == 1 ? <>
+              loading ? <PageLoading /> : 
+            <>
+              {
+                historyList.map((item: any) => {
+                  return <div className={`${style.listItem} ${item.form == 1 ? style.specialClass : ''}`} key={item.createTime}>
+                  {
+                    item.form == 1 ? <>
+                    <div className={style.content}>
+                      <p>{item.createTime}</p>
+                      {item.type == 1 ? item.content : <Image className={style.contentImg} src={item.content} />}
+                    </div>
+                    <img className={style.avatar} src={item.formPhoto || 'http://img.zhengtaixinnengyuan.com/images/2023-06-11/b03b0934833b48748fa472378bca45c9.png'} /></> : 
+                    <><img className={style.avatar} src={item.formPhoto && item.formPhoto !== '1' ? item.formPhoto : 'http://img.zhengtaixinnengyuan.com/images/2023-06-09/c705b8dff6ad476f98b97c1708b63fb4.png'} alt='无'/>
                   <div className={style.content}>
                     <p>{item.createTime}</p>
                     {item.type == 1 ? item.content : <Image className={style.contentImg} src={item.content} />}
-                  </div>
-                  <img className={style.avatar} src={item.formPhoto || 'http://img.zhengtaixinnengyuan.com/images/2023-06-11/b03b0934833b48748fa472378bca45c9.png'} /></> : 
-                  <><img className={style.avatar} src={item.formPhoto && item.formPhoto !== '1' ? item.formPhoto : 'http://img.zhengtaixinnengyuan.com/images/2023-06-09/c705b8dff6ad476f98b97c1708b63fb4.png'} alt='无'/>
-                <div className={style.content}>
-                  <p>{item.createTime}</p>
-                  {item.type == 1 ? item.content : <Image className={style.contentImg} src={item.content} />}
-                </div></>
-                }
-              </div>
-              })
+                  </div></>
+                  }
+                </div>
+                })
+              }
+              </>
             }
-           
           </div>
-          <h3>回复：</h3>
-          <ProFormUploadButton
-            max={1}
-            name="image"
-            title='选择图片'
-            onChange={onchangeUpload}
-            fieldProps={{
-              ...Upload,
-            }}
-          />
-          {
-            type === 1 ? <Input.TextArea placeholder='请输入回复内容' rows={3} value={content} onChange={(e) => setContent(e.target.value)} /> : content ? <Image className={style.replyImg} src={content} /> : null
-          }
+          <div className={style.replyContent}>
+            <ProFormUploadButton
+              max={1}
+              name="image"
+              title='选择图片'
+              onChange={onchangeUpload}
+              fieldProps={{
+                ...Upload,
+              }}
+            />
+            {
+              type === 1 ? <Input.TextArea placeholder='请输入回复内容' rows={3} value={content} onChange={(e) => setContent(e.target.value)} /> : content ? <Image className={style.replyImg} src={content} /> : null
+            }
+          </div>
         </ProForm>
       </Modal>
       <UpdateForm

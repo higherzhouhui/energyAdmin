@@ -6,6 +6,7 @@ export type TableListItem = {
   content: string;
   stat: boolean;
   userId: string;
+  phone: string;
 };
 
 export type TableListPagination = {
