@@ -1,9 +1,9 @@
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
-import { FooterToolbar, PageContainer, PageLoading } from '@ant-design/pro-layout';
+import { PageContainer, PageLoading } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Badge, Button, Drawer, Form, Image, Input, message, Modal, Popconfirm, Select, Tag } from 'antd';
+import { Badge, Button, Drawer, Input, message, Image, Modal, Select } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
@@ -12,6 +12,7 @@ import { replayRule, removeRule, rule, updateRule, getDetailRule } from './servi
 import ProForm, { ProFormUploadButton } from '@ant-design/pro-form';
 import style from './style.less'
 import { request } from 'umi';
+import { trim } from 'lodash';
 /**
  * 更新节点
  *
@@ -77,8 +78,8 @@ const TableList: React.FC = () => {
   const [content, setContent] = useState('');
   const formRef = useRef<any>();
   const [historyList, setHistoryList] = useState([])
-  const [freshTime, setFreshTime] = useState(30)
-  const [selectValue, setselectValue] = useState('30')
+  const [freshTime, setFreshTime] = useState(60)
+  const [selectValue, setselectValue] = useState('60')
   const timer = useRef<any>(null)
   const [type, setType] = useState(1)
   const [loading, setLoading] = useState(false)
@@ -88,7 +89,9 @@ const TableList: React.FC = () => {
     {label: '10s', value: 10},
     {label: '30s', value: 30},
     {label: '60s', value: 60},
-    {label: '120s', value: 120},
+    {label: '两分钟', value: 120},
+    {label: '五分钟', value: 300},
+    {label: '半个小时', value: 1800},
     {label: '暂停刷新', value: 0},
   ]
   const handleUpdateRecord = async (record: TableListItem) => {
@@ -114,7 +117,7 @@ const TableList: React.FC = () => {
         ctime -= 1
         if (ctime === 0) {
           ctime = Number(time)
-          actionRef.current?.reloadAndRest?.();
+          actionRef.current?.reload?.();
         }
         setFreshTime(ctime)
       }, 1000)
@@ -137,6 +140,9 @@ const TableList: React.FC = () => {
       title: '发送人手机号',
       dataIndex: 'phone',
       width: 150,
+      render: (_, record) => {
+        return <b>{record.phone}</b>
+      }
     },
     {
       title: '发送人Id',
@@ -151,7 +157,7 @@ const TableList: React.FC = () => {
         return (
           <>
           {
-            record.type == 1 ? <p>{record.content}</p> : <Image src={record.content} width={120} height={120} style={{ objectFit: 'contain' }} />
+            record.type == 1 ? <p style={{color: '#f55c51'}}>{record.content}</p> : <Image src={record.content} width={120} height={120} style={{ objectFit: 'contain' }} />
           }
           </>
         );
@@ -178,6 +184,9 @@ const TableList: React.FC = () => {
       title: '发送时间',
       dataIndex: 'createTime',
       width: 150,
+      render: (_, record) => {
+        return <p style={{color: '#999'}}>{record.createTime}</p>
+      }
     },
     {
       title: '操作',
@@ -202,24 +211,34 @@ const TableList: React.FC = () => {
     },
   ];
   const updateHistory = async () => {
-    setContent('')
-    setType(1)
-    formRef?.current?.resetFields();
+    const oldHistory = [...historyList]
     const hisRes = await getDetailRule({form: currentRow?.form})
     if (hisRes.code === 200) {
         setHistoryList(hisRes.data)
     }
-    listRef.current.scrollTop = listRef.current.scrollHeight   
+    if (oldHistory.length !== hisRes.data.length) {
+        listRef.current.scrollTop = listRef.current.scrollHeight
+    }
   }
-  const handleOk = async () => {
+  const handleOk = async (ptype?: number, pcontent?: string) => {
+    if (!pcontent && !trim(content)) {
+      return
+    }
     try {
       const res = await replayRule({
-        content: content,
+        content: pcontent || content,
         to: currentRow?.form,
-        type: type,
+        type: ptype || type,
       });
       if (res.code === 200) {
-        updateHistory()
+        setContent('')
+        setType(1)
+        formRef?.current?.resetFields();
+        const hisRes = await getDetailRule({form: currentRow?.form})
+        if (hisRes.code === 200) {
+            setHistoryList(hisRes.data)
+        }
+        listRef.current.scrollTop = listRef.current.scrollHeight
       }
       return true;
     } catch (error) {
@@ -239,12 +258,13 @@ const TableList: React.FC = () => {
       // /upload为图片上传的地址，后台只需要一个图片的path
       // name，path，status是组件上传需要的格式需要自己去拼接
       request('/admin/upload/uploadImage', { method: 'POST', data: formData })
-        .then((data: any) => {
+        .then(async (data: any) => {
           const _response = { name: file.name, status: 'done', path: data.data };
           setType(2)
           setContent(data.data)
           //请求成功后把file赋值上去
           onSuccess(_response, file);
+          await handleOk(2, data.data)
         })
         .catch(onError);
     },
@@ -256,6 +276,12 @@ const TableList: React.FC = () => {
       setType(1)
       setContent('')
     }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter') {
+        handleOk()
+      }
   }
 
   useEffect(() => {
@@ -270,7 +296,7 @@ const TableList: React.FC = () => {
     if (createModalVisible) {
       chatTimer.current = setInterval(() => {
         updateHistory()
-      }, 5000)
+      }, 10000)
     } else {
       clearInterval(chatTimer.current)
     }
@@ -310,14 +336,14 @@ const TableList: React.FC = () => {
           };
         }}
         columns={columns}
-        rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
-        }}
+        // rowSelection={{
+        //   onChange: (_, selectedRows) => {
+        //     setSelectedRows(selectedRows);
+        //   },
+        // }}
       />
       <Modal
-        title={`与${currentRow?.phone}用户的聊天记录`}
+        title={<div>与<b>{currentRow?.phone}</b>的聊天记录</div>}
         visible={createModalVisible}
         width={700}
         onOk={() => handleOk()}
@@ -356,15 +382,13 @@ const TableList: React.FC = () => {
             <ProFormUploadButton
               max={1}
               name="image"
-              title='选择图片'
+              title='图片'
               onChange={onchangeUpload}
               fieldProps={{
                 ...Upload,
               }}
             />
-            {
-              type === 1 ? <Input.TextArea placeholder='请输入回复内容' rows={3} value={content} onChange={(e) => setContent(e.target.value)} /> : content ? <Image className={style.replyImg} src={content} /> : null
-            }
+            <Input.TextArea placeholder='请输入回复内容(enter键可快速回复)' onKeyDown={(e) => handleKeyDown(e)} rows={3} value={content} onChange={(e) => setContent(e.target.value)} />
           </div>
         </ProForm>
       </Modal>

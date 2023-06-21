@@ -48,7 +48,7 @@ export async function addRule(data: { [key: string]: any }, options?: { [key: st
 
 /** 删除规则 DELETE /api/rule */
 export async function removeRule(data: { id: number }, options?: { [key: string]: any }) {
-  return request<Record<string, any>>(`/admin/expand/delete/${data.id}`, {
+  return request<Record<string, any>>(`/admin/user/delete/${data.id}`, {
     data,
     method: 'DELETE',
     ...(options || {}),

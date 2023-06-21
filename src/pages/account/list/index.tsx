@@ -3,31 +3,49 @@ import ProDescriptions from '@ant-design/pro-descriptions';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Drawer, Form, Image, Input, Modal, Tag, message } from 'antd';
+import { Button, Drawer, Form, Image, Input, Modal, Popconfirm, Tag, message } from 'antd';
 import React, { useRef, useState } from 'react';
 import type { TableListItem, TableListPagination } from './data';
-import { addRule, rule } from './service';
+import { addRule, rule, removeRule } from './service';
 import ProForm from '@ant-design/pro-form';
-import style from './style.less'
+import style from './style.less';
 import { history } from 'umi';
-import * as XLSX from 'xlsx'
-import { TableOutlined } from '@ant-design/icons';
+import * as XLSX from 'xlsx';
+import { DeleteOutlined, EditOutlined, FormOutlined, PartitionOutlined, TableOutlined } from '@ant-design/icons';
 const TableList: React.FC = () => {
   /** 分布更新窗口的弹窗 */
-  const [showDetail, setShowDetail] = useState(false)
-  const [currentRow, setCurrentRow] = useState<any>()
-  const [total, setTotal] = useState(0)
+  const [showDetail, setShowDetail] = useState(false);
+  const [currentRow, setCurrentRow] = useState<any>();
+  const [total, setTotal] = useState(0);
   const actionRef = useRef<ActionType>();
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
-  const formRef = useRef<any>()
-  const handleUpdateRecord = (record: TableListItem) => {
+  const formRef = useRef<any>();
+  const [operationType, setOperationType] = useState('baseInfo');
+  const titleMap = {
+    baseInfo: '修改基本资料',
+    resetPassword: '修改密码',
+    changeInvited: '修改上级邀请码',
+  };
+  const handleUpdateRecord = (record: TableListItem, type: string) => {
+    setOperationType(type);
     setCurrentRow(record);
     handleModalVisible(true);
     formRef?.current?.resetFields();
-  }
+  };
   const routeToChildren = (record: TableListItem) => {
-    history.push(`/account/children?userId=${record.id}&name=${record.name}`)
+    history.push(`/account/children?userId=${record.id}&name=${record.name}`);
+  };
+
+  const handleRemove = async (id: number) => {
+    const hide = message.loading('正在删除...')
+    const res = await removeRule({id: id})
+    hide()
+    if (res.code === 200) {
+      message.success('删除成功,正在刷新!')
+      actionRef?.current?.reloadAndRest?.()
+    }
   }
+
   const columns: ProColumns<any>[] = [
     {
       title: 'ID',
@@ -38,7 +56,9 @@ const TableList: React.FC = () => {
       hideInTable: true,
       render: (_, record) => {
         return (
-          <div className={style.link} onClick={() => routeToChildren(record)}>{record.id}</div>
+          <div className={style.link} onClick={() => routeToChildren(record)}>
+            {record.id}
+          </div>
         );
       },
     },
@@ -70,9 +90,16 @@ const TableList: React.FC = () => {
       render: (_, record) => {
         return (
           <>
-            {
-              record.avatar ? <Image src={record.avatar} width={120} height={120} style={{ objectFit: 'contain' }} /> : <div className={style.avatar}>{record.name || String(record.id).slice(0, 5)}</div>
-            }
+            {record.avatar ? (
+              <Image
+                src={record.avatar}
+                width={120}
+                height={120}
+                style={{ objectFit: 'contain' }}
+              />
+            ) : (
+              <div className={style.avatar}>{record.name || String(record.id).slice(0, 5)}</div>
+            )}
           </>
         );
       },
@@ -85,9 +112,11 @@ const TableList: React.FC = () => {
       render: (_, record) => {
         return (
           <>
-            {
-              record.authenticated ? <Tag color='#87d068'>已实名</Tag> : <Tag color='#f50'>未实名</Tag>
-            }
+            {record.authenticated ? (
+              <Tag color="#87d068">已实名</Tag>
+            ) : (
+              <Tag color="#f50">未实名</Tag>
+            )}
           </>
         );
       },
@@ -100,7 +129,9 @@ const TableList: React.FC = () => {
       hideInSearch: true,
       render: (_, record) => {
         return (
-          <div className={style.link} onClick={() => routeToChildren(record)}>{record.totalChildren !== undefined ? record.totalChildren : '查看下级会员'}</div>
+          <div className={style.link} onClick={() => routeToChildren(record)}>
+            {record.totalChildren !== undefined ? record.totalChildren : '查看下级会员'}
+          </div>
         );
       },
     },
@@ -129,9 +160,11 @@ const TableList: React.FC = () => {
       render: (_, record) => {
         return (
           <>
-            {
-              record.registerType == 1 ? <Tag color='warning'>APP注册</Tag> : <Tag color='success'>链接注册</Tag>
-            }
+            {record.registerType == 1 ? (
+              <Tag color="warning">APP注册</Tag>
+            ) : (
+              <Tag color="success">链接注册</Tag>
+            )}
           </>
         );
       },
@@ -144,9 +177,11 @@ const TableList: React.FC = () => {
       render: (_, record) => {
         return (
           <>
-            {
-              record.signInStatus ? <Tag color='#87d068'>已签到</Tag> : <Tag color='#f50'>未签到</Tag>
-            }
+            {record.signInStatus ? (
+              <Tag color="#87d068">已签到</Tag>
+            ) : (
+              <Tag color="#f50">未签到</Tag>
+            )}
           </>
         );
       },
@@ -173,17 +208,46 @@ const TableList: React.FC = () => {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      width: 80,
+      width: 220,
       hideInDescriptions: true,
       fixed: 'right',
       render: (_, record) => [
-        <a key="access" onClick={() => handleUpdateRecord(record)}>
-          修改
-        </a>
+        <a
+          style={{ color: '#4423da' }}
+          key="baseInfo"
+          onClick={() => handleUpdateRecord(record, 'baseInfo')}
+        >
+          <FormOutlined />
+          基本资料
+        </a>,
+        <a style={{ color: '#13e436' }} key="resetPassword" onClick={() => handleUpdateRecord(record, 'resetPassword')}>
+          <EditOutlined />
+          密码
+        </a>,
+        // <a
+        //   style={{ color: '#e03e0d' }}
+        //   key="changeInvited"
+        //   onClick={() => handleUpdateRecord(record, 'changeInvited')}
+        // >
+        //   <PartitionOutlined />
+        //   上级推荐码
+        // </a>,
+        <Popconfirm
+          title="确认删除该会员?"
+          onConfirm={async () => {
+            handleRemove(record.id)
+          }}
+          key="access"
+        >
+          <a key="access" style={{color: 'red'}}>
+            <DeleteOutlined />
+            删除
+          </a>
+        </Popconfirm> 
       ],
     },
   ];
-  const  getChildrenCount = (node: any) => {
+  const getChildrenCount = (node: any) => {
     if (!node || !node.children) {
       // 如果没有子节点，则直接返回
       return 0;
@@ -194,8 +258,8 @@ const TableList: React.FC = () => {
       childCount += getChildrenCount(node.children[i]);
     }
     return childCount; // 返回总子节点数量
-  }
-  const buildTree = (data: any[], referrerId=1) => {
+  };
+  const buildTree = (data: any[], referrerId = 1) => {
     const result: any[] = [];
     for (let i = 0; i < data.length; i++) {
       if (data[i].referrerId === referrerId) {
@@ -208,27 +272,54 @@ const TableList: React.FC = () => {
           delete node.children; // 删除空的 children 属性
         }
         if (node.children) {
-          node.totalChildren = getChildrenCount(node)
+          node.totalChildren = getChildrenCount(node);
         }
         result.push(node);
       }
     }
-    return result
-  }
- 
+    return result;
+  };
+
   const handleOk = async () => {
-    if (!currentRow?.name || !currentRow?.idCard || !currentRow?.mobilePhone) {
-      message.warning('请输入完整信息!')
-      return
+    let param: any = {
+      id: currentRow?.id,
     }
-    const hide = message.loading(`正在${currentRow?.id ? '更新' : '新增'}`);
-    try {
-      const res = await addRule({
-        id: currentRow?.id,
+    if (operationType === 'baseInfo') {
+      if (!currentRow?.name || !currentRow?.idCard || !currentRow?.mobilePhone) {
+        message.warning('请输入完整信息!');
+        return;
+      }
+      param = {
+        ...param,
         name: currentRow?.name,
         idCard: currentRow?.idCard,
         mobilePhone: currentRow?.mobilePhone,
-      });
+        referrerInviteCode: currentRow?.referrerInviteCode,
+      }
+    }
+    if (operationType === 'resetPassword') {
+      if (!currentRow?.newPassword) {
+        message.warning('请输入新密码!');
+        return;
+      }
+      param = {
+        ...param,
+        newPassword: currentRow?.newPassword,
+      }
+    }
+    // if (operationType === 'changeInvited') {
+    //   if (!currentRow?.referrerInviteCode) {
+    //     message.warning('请输入新的上级推荐码!');
+    //     return;
+    //   }
+    //   param = {
+    //     ...param,
+    //     referrerInviteCode: currentRow?.referrerInviteCode,
+    //   }
+    // }
+    const hide = message.loading(`正在${currentRow?.id ? '更新' : '新增'}`);
+    try {
+      const res = await addRule(param);
       handleModalVisible(false);
       hide();
       if (res.code === 200) {
@@ -247,10 +338,10 @@ const TableList: React.FC = () => {
     }
   };
   const handleChange = (value: any, attar: string) => {
-    const newRow = Object.assign({}, currentRow)
-    newRow[attar] = value
-    setCurrentRow(newRow)
-  }
+    const newRow = Object.assign({}, currentRow);
+    newRow[attar] = value;
+    setCurrentRow(newRow);
+  };
 
   const export2Excel = (id: string, name: string) => {
     const exportFileContent = document.getElementById(id)!.cloneNode(true);
@@ -264,7 +355,7 @@ const TableList: React.FC = () => {
         actionRef={actionRef}
         rowKey="mobilePhone"
         dateFormatter="string"
-        id='myTable'
+        id="myTable"
         headerTitle={`总会员：${total}`}
         toolBarRender={() => [
           <Button type="primary" key="primary" onClick={() => export2Excel('myTable', '会员列表')}>
@@ -276,8 +367,7 @@ const TableList: React.FC = () => {
           labelWidth: 90,
           //隐藏展开、收起
           collapsed: false,
-          collapseRender:()=>false,
-          
+          collapseRender: () => false,
         }}
         // pagination={{
         //   pageSize: 10,
@@ -286,10 +376,10 @@ const TableList: React.FC = () => {
         pagination={false}
         scroll={{
           x: 1800,
-          y: document.body.clientHeight - 350
+          y: document.body.clientHeight - 350,
         }}
         request={async (params: TableListPagination) => {
-          const res: any = await rule({...params, pageNum: 1, pageSize: 99999});
+          const res: any = await rule({ ...params, pageNum: 1, pageSize: 99999 });
           // (res?.data?.list || []).map((item: any) => {
           //   let registerType = 'APP注册';
           //   if (item.registerType == 2) {
@@ -297,14 +387,14 @@ const TableList: React.FC = () => {
           //   }
           //   item.registerType = registerType;
           // });
-          let data: any = []
-          data = res?.data?.list || []
+          let data: any = [];
+          data = res?.data?.list || [];
           if (params.mobilePhone) {
-            data = res?.data?.list || []
+            data = res?.data?.list || [];
           } else {
-            data = buildTree(res?.data?.list || [])
+            data = buildTree(res?.data?.list || []);
           }
-          setTotal(res?.data?.totalSize)
+          setTotal(res?.data?.totalSize);
           return {
             data: data,
             page: res?.data?.pageNum,
@@ -315,22 +405,62 @@ const TableList: React.FC = () => {
         columns={columns}
       />
       <Modal
-        title={currentRow?.id ? '修改会员信息' : '新增'}
+        title={titleMap[operationType]}
         visible={createModalVisible}
         onOk={() => handleOk()}
         onCancel={() => handleModalVisible(false)}
         width={500}
       >
         <ProForm formRef={formRef} submitter={false}>
-          <Form.Item label="手机号码">
-            <Input value={currentRow?.mobilePhone} onChange={(e) => handleChange(e.target.value, 'mobilePhone')}/>
-          </Form.Item>
-          <Form.Item label="姓名">
-            <Input value={currentRow?.name} onChange={(e) => handleChange(e.target.value, 'name')}/>
-          </Form.Item>
-          <Form.Item label="身份证号">
-            <Input value={currentRow?.idCard} onChange={(e) => handleChange(e.target.value, 'idCard')}/>
-          </Form.Item>
+          {operationType === 'baseInfo' ? (
+            <>
+              <Form.Item label="手机号码">
+                <Input
+                  value={currentRow?.mobilePhone}
+                  onChange={(e) => handleChange(e.target.value, 'mobilePhone')}
+                />
+              </Form.Item>
+              <Form.Item label="姓名">
+                <Input
+                  value={currentRow?.name}
+                  onChange={(e) => handleChange(e.target.value, 'name')}
+                />
+              </Form.Item>
+              <Form.Item label="身份证号">
+                <Input
+                  value={currentRow?.idCard}
+                  onChange={(e) => handleChange(e.target.value, 'idCard')}
+                />
+              </Form.Item>
+              <Form.Item label="上级推荐码">
+                <Input
+                  value={currentRow?.referrerInviteCode}
+                  onChange={(e) => handleChange(e.target.value, 'referrerInviteCode')}
+                  placeholder='请输入上级推荐码'
+                />
+              </Form.Item>
+            </>
+          ) : operationType === 'resetPassword' ? (
+            <>
+              <Form.Item label="新密码">
+                <Input
+                  value={currentRow?.newPassword}
+                  onChange={(e) => handleChange(e.target.value, 'newPassword')}
+                  placeholder='请输入新密码'
+                />
+              </Form.Item>
+            </>
+          ) : operationType === 'changeInvited' ? (
+            <>
+              <Form.Item label="上级推荐码">
+                <Input
+                  value={currentRow?.referrerInviteCode}
+                  onChange={(e) => handleChange(e.target.value, 'referrerInviteCode')}
+                  placeholder='请输入上级推荐码'
+                />
+              </Form.Item>
+            </>
+          ) : null}
         </ProForm>
       </Modal>
       <Drawer

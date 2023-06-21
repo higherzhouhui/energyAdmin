@@ -1,7 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
 import { request } from 'umi';
-import { TableListItem } from './data';
 
 /** 获取规则列表 GET /api/rule */
 export async function rule() {
@@ -12,7 +11,7 @@ export async function rule() {
 
 /** 新建规则 PUT /api/rule */
 export async function updateRule(data: { [key: string]: any }, options?: { [key: string]: any }) {
-  return request<TableListItem>('/admin/customer-service/updateCustomerService', {
+  return request<any>('/admin/customer-service/updateCustomerService', {
     data,
     method: 'POST',
     ...(options || {}),
