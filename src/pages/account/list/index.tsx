@@ -67,7 +67,6 @@ const TableList: React.FC = () => {
       dataIndex: 'name',
       width: 150,
       tooltip: '点击可查看该用户详情',
-      hideInSearch: true,
       render: (dom, entity) => {
         return (
           <div
@@ -144,7 +143,6 @@ const TableList: React.FC = () => {
       title: '身份证号',
       dataIndex: 'idCard',
       width: 160,
-      hideInSearch: true,
     },
     {
       title: '推荐人手机号',
@@ -208,7 +206,7 @@ const TableList: React.FC = () => {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      width: 220,
+      width: 160,
       hideInDescriptions: true,
       fixed: 'right',
       render: (_, record) => [
@@ -218,7 +216,7 @@ const TableList: React.FC = () => {
           onClick={() => handleUpdateRecord(record, 'baseInfo')}
         >
           <FormOutlined />
-          基本资料
+          资料
         </a>,
         <a style={{ color: '#13e436' }} key="resetPassword" onClick={() => handleUpdateRecord(record, 'resetPassword')}>
           <EditOutlined />
@@ -260,6 +258,9 @@ const TableList: React.FC = () => {
     return childCount; // 返回总子节点数量
   };
   const buildTree = (data: any[], referrerId = 1) => {
+    if (data.length === 1) {
+      return data
+    }
     const result: any[] = [];
     for (let i = 0; i < data.length; i++) {
       if (data[i].referrerId === referrerId) {
@@ -388,12 +389,7 @@ const TableList: React.FC = () => {
           //   item.registerType = registerType;
           // });
           let data: any = [];
-          data = res?.data?.list || [];
-          if (params.mobilePhone) {
-            data = res?.data?.list || [];
-          } else {
-            data = buildTree(res?.data?.list || []);
-          }
+          data = buildTree(res?.data?.list || []);
           setTotal(res?.data?.totalSize);
           return {
             data: data,
