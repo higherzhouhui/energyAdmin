@@ -1,17 +1,18 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import { Button, Radio, Table } from 'antd';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import type { TableListItem } from './data';
+import type { ITongji, TableListItem } from './data';
 import { rule} from './service';
 import { Line } from '@ant-design/charts';
 import style from './style.less'
 import * as XLSX from 'xlsx';
-import { TableOutlined } from '@ant-design/icons';
+import { RedoOutlined, TableOutlined } from '@ant-design/icons';
 
 const TableList: React.FC = () => {
   const [day, setDay] = useState(7)
   const [dataSource, setDataSource] = useState<TableListItem | any>({})
   const [loading, setLoading] = useState(true)
+  const [tongji, setTongji] = useState<ITongji[]>([])
   const itemRef = useRef<any>()
   const columns = [
     {
@@ -96,20 +97,30 @@ const TableList: React.FC = () => {
     const wb = XLSX.utils.table_to_book(exportFileContent, { sheet: 'sheet1' });
     XLSX.writeFile(wb, `${name}.xlsx`);
   };
-  useEffect(() => {
+
+
+  const initData = () => {
     setLoading(true)
     rule({day: day}).then((res: any) => {
       if (res.code === 200) {
-        (res?.data?.userList || []).map((item: any) => {
+        const data = res.data;
+        const arr = [
+          {title: '总实名用户', num: data?.sumUserNum},
+          {title: '总出款金额', num: data?.withdrawSumPrice},
+          {title: '总入款金额', num: data?.buyProjectSumPrice},
+        ];
+        setTongji(arr);
+
+        (data?.userList || []).map((item: any) => {
           item.num = parseInt(item.num)
         });
-        (res?.data?.buyProjectPriceList || []).map((item: any) => {
+        (data?.buyProjectPriceList || []).map((item: any) => {
           item.num = parseInt(item.num)
         });
-        (res?.data?.buyProjectNumList || []).map((item: any) => {
+        (data?.buyProjectNumList || []).map((item: any) => {
           item.num = parseInt(item.num)
         });
-        (res?.data?.withdrawPriceList || []).map((item: any) => {
+        (data?.withdrawPriceList || []).map((item: any) => {
           item.num = parseInt(item.num)
         });
         setDataSource(res.data)
@@ -118,14 +129,36 @@ const TableList: React.FC = () => {
     }).catch(() => {
       setLoading(false)
     })
+  }
+
+  const handleChangeRadio = (e: any) => {
+    const value = e.target.value
+    if (value) {
+      setDay(value)
+    }
+  }
+
+  useEffect(() => {
+    initData()
   }, [day])
   return (
     <PageContainer>
-       <Radio.Group defaultValue={7} size="large" onChange={(e) => setDay(e.target.value)} buttonStyle="solid">
+       <div className={style.tongji}>
+          {
+            tongji.map((item: ITongji) => {
+              return <div className={style.item} key={item.title}>
+              <div className={style.ttitle}>{item.title}</div>
+              <div className={style.num}>{item.num}</div>
+            </div>
+            })
+          }
+       </div>
+       <Radio.Group defaultValue={7} size="large" onChange={(e) => handleChangeRadio(e)} buttonStyle="solid">
         <Radio.Button value={7}>最近7天</Radio.Button>
         <Radio.Button value={15}>最近15天</Radio.Button>
         <Radio.Button value={30}>最近30天</Radio.Button>
       </Radio.Group>
+      <Button size='large' type='default' onClick={() => initData()}><RedoOutlined /> 刷新</Button>
       <div className={style.main}>
         <div className={style.item} ref={itemRef}>
           <div className={style.topContent}>

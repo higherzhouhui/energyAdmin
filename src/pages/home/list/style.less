@@ -27,3 +27,35 @@
   color: red;
   font-weight: bold;
 }
+.tongji {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 10px;
+  border-bottom: 1px solid #ccbfbf;
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+  .item {
+    background: #ce4343;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    .ttitle {
+      font-size: 15px;
+      text-align: center;
+    }
+    .num {
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+    }
+  }
+  .item:nth-child(2) {
+    background: #4fc781;
+  }
+  .item:nth-child(3) {
+    background: #546bb6;
+  }
+  .item:nth-child(4) {
+    background: #aebb3e;
+  }
+}

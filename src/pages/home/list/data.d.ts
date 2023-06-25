@@ -26,6 +26,11 @@ export type TableListItem = {
   withdrawSumPrice: '总出款金额'
 };
 
+export type ITongji = {
+  num?: number;
+  title: string;
+};
+
 export type TableListPagination = {
   day: number
 };
