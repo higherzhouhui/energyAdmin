@@ -294,11 +294,7 @@ const TableList: React.FC = () => {
     },
   ];
   const updateHistory = async () => {
-    const oldHistory = [...historyList];
     const hisRes = await getDetailRule({ form: currentRow?.form });
-    if (oldHistory.length !== hisRes.data.length) {
-      listRef.current.scrollTop = listRef.current.scrollHeight;
-    }
     if (hisRes.code === 200) {
       setHistoryList([...hisRes.data]);
     }
@@ -385,7 +381,6 @@ const TableList: React.FC = () => {
     }
   }, [pageNum])
   useEffect(() => {
-    console.log(document.body.clientWidth)
     if (document.body.clientWidth > 900) {
       setCurrentDevice('PC');
     } else {

@@ -36,7 +36,7 @@ export default defineConfig({
   routes: [
     {
       path: '/',
-      redirect: '/home/list',
+      redirect: '/online/list',
     },
     {
       path: '/home',
@@ -107,9 +107,6 @@ export default defineConfig({
           path: '/user/register',
           component: './user/register',
         },
-        {
-          component: '404',
-        },
       ],
     },
     {
@@ -163,9 +160,6 @@ export default defineConfig({
           path: '/datamanage/version',
           component: './datamanage/version',
           access: 'adminRouteFilter',
-        },
-        {
-          component: '404',
         },
       ],
     },

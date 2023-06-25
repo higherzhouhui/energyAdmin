@@ -5,6 +5,7 @@ import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import { currentUser as queryCurrentUser } from './services/login/api';
 import './global.less'
+import TagView from '@/components/TagView';
 const loginPath = '/user/login';
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
@@ -65,6 +66,20 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
       }
     },
     menuHeaderRender: undefined,
+    contentStyle: {
+      paddingTop: '40px',
+    },
+    childrenRender: (children) => {
+      return (
+        <>
+          {initialState?.currentUser && location.pathname !== loginPath ? (
+            <TagView home="/online/list" >{children}</TagView>
+          ) : (
+            children
+          )}
+        </>
+      );
+    },
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
     ...initialState?.settings,
