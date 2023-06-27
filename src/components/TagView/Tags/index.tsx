@@ -64,25 +64,27 @@ const Tags: React.FC<IProps> = ({ tagList, closeTag, closeAllTag, closeOtherTag,
   return (
     <div className={styles.tags_wrapper} ref={tagListRef}>
       <Scrollbars autoHide autoHideTimeout={1000} autoHideDuration={200}>
-        {tagList.map((item, i) => (
-          <div
-            key={item.path}
-            className={item.active ? `${styles.item} ${styles.active}` : styles.item}
-            onClick={() => history.push({ pathname: item.path, query: item.query })}
-            onContextMenu={(e) => openContextMenu(e, item)}
-          >
-            <span>{item.title}</span>
-            {i !== 0 && (
-              <CloseOutlined
-                className={styles.icon_close}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  closeTag && closeTag(item);
-                }}
-              />
-            )}
-          </div>
-        ))}
+        {tagList.map((item, i) =>
+          item.path ? (
+            <div
+              key={item.path}
+              className={item.active ? `${styles.item} ${styles.active}` : styles.item}
+              onClick={() => history.push({ pathname: item.path, query: item.query })}
+              onContextMenu={(e) => openContextMenu(e, item)}
+            >
+              <span>{item.title}</span>
+              {i !== 0 && (
+                <CloseOutlined
+                  className={styles.icon_close}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    closeTag && closeTag(item);
+                  }}
+                />
+              )}
+            </div>
+          ) : null,
+        )}
       </Scrollbars>
       {menuVisible ? (
         <ul

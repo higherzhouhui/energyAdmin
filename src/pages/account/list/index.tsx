@@ -11,7 +11,7 @@ import ProForm from '@ant-design/pro-form';
 import style from './style.less';
 import { history } from 'umi';
 import * as XLSX from 'xlsx';
-import { DeleteOutlined, EditOutlined, FormOutlined, PartitionOutlined, TableOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, FormOutlined, TableOutlined } from '@ant-design/icons';
 const TableList: React.FC = () => {
   /** 分布更新窗口的弹窗 */
   const [showDetail, setShowDetail] = useState(false);

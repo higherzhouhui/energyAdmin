@@ -258,7 +258,7 @@ const TableList: React.FC = () => {
         ]}
         dateFormatter="string"
         pagination={{
-          pageSize: 10,
+          current: 1,
         }}
         scroll={{
           x: 1400,

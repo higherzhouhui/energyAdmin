@@ -21,7 +21,7 @@ export default {
   'menu.list.table-list': '查询表格',
   'menu.profile': '详情页',
   'menu.profile.basic': '基础详情页',
-  'menu.datamanage': 'APP展示数据管理',
+  'menu.datamanage': 'APP内展示数据',
   'menu.datamanage.datamanage-tuiguang': '推广奖励',
   'menu.datamanage.datamanage-noticelist': '公告',
   'menu.datamanage.datamanage-bannerlist': '轮播图',

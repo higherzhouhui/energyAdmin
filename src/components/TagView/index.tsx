@@ -47,7 +47,6 @@ const TagView: React.FC<IProps> = ({ children, home }) => {
   // 初始化 visitedViews，设置首页
   const initTags = (routeContext: RouteContextType) => {
     const { menuData } = routeContext;
-    console.log(menuData)
     if (tagList.length === 0 && menuData) {
       const firstTag = searchPath(menuData, home);
       const title = firstTag?.name;
