@@ -176,7 +176,7 @@ const TagView: React.FC<IProps> = ({ children, home }) => {
 
       {tagList.map((item) => {
         return (
-          <div key={item.path} style={{ display: item.active ? 'block' : 'none' }}>
+          <div key={item.path || 'test'} style={{ display: item.active ? 'block' : 'none' }}>
             <div key={item.refresh}>{item.children}</div>
           </div>
         );
