@@ -9,21 +9,21 @@
 export default {
   dev: {
     '/admin/': {
-      target: 'http://www.zhengtaixinnengyuan.com',
+      target: 'http://api.zhtxny.com',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
   },
   test: {
     '/admin/': {
-      target: 'http://www.zhengtaixinnengyuan.com',
+      target: 'http://api.zhtxny.com',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
   },
   pre: {
     '/none/': {
-      target: 'http://www.zhengtaixinnengyuan.com',
+      target: 'http://api.zhtxny.com',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
